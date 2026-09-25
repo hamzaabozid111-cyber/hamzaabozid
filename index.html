@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة تحليل الأداء - النظام التفاعلي الشامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0f172a; --secondary: #1e3a8a; --accent: #f59e0b;
+            --bg: #f8fafc; --card-bg: rgba(255, 255, 255, 0.98);
+            --text: #1e293b; --text-light: #64748b; --danger: #ef4444;
+            --success: #10b981; --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+        body {
+            background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.55)), 
+                        url('https://i.imgur.com/yctGfBO.jpeg') no-repeat center center fixed;
+            background-size: cover; color: var(--text); min-height: 100vh; display: flex; flex-direction: column;
+        }
+
+        #authSection { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; }
+
+        .login-card {
+            background: var(--card-bg); backdrop-filter: blur(10px); width: 100%; max-width: 420px;
+            padding: 2.5rem; border-radius: 1.25rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            text-align: center; border: 2px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .profile-badge-container { width: 100px; height: 100px; margin: 0 auto 1.25rem auto; }
+        .analyst-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); background-color: #e2e8f0; }
+
+        .login-card h1 { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 0.25rem; }
+        .login-card p { color: var(--secondary); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.75rem; }
+
+        .form-group { margin-bottom: 1rem; text-align: right; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 700; color: var(--text); font-size: 0.85rem; }
+        .form-control { width: 100%; padding: 0.75rem 0.9rem; border: 2px solid var(--border); border-radius: 0.65rem; font-size: 0.95rem; background-color: #f8fafc; text-align: center; }
+
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), #0f172a); color: white; border: none;
+            padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 800; border-radius: 0.65rem;
+            cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .welcome-banner { background: linear-gradient(135deg, #1e3a8a, #0f172a); color: white; padding: 1.2rem; border-radius: 0.75rem; margin-bottom: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; border-right: 6px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        #dashboardSection { flex: 1; padding: 2rem; background-color: rgba(248, 250, 252, 0.97); min-height: 100vh; padding-bottom: 140px; }
+
+        .dash-header { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 1.25rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 2rem; border-right: 5px solid var(--accent); flex-wrap: wrap; gap: 1rem; }
+
+        .team-analytics-card { background: #ffffff; border-radius: 1rem; padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 5px solid var(--accent); }
+        .team-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .team-stat-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem; text-align: center; }
+        .team-stat-label { font-size: 0.75rem; color: var(--text-light); font-weight: 700; margin-bottom: 0.25rem; }
+        .team-stat-val { font-size: 1.25rem; font-weight: 900; color: var(--secondary); }
+
+        .admin-box { background: #ffffff; border: 2px dashed var(--accent); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; }
+        .admin-box h3 { color: var(--secondary); margin-bottom: 1rem; font-size: 1.1rem; }
+        .admin-controls-grid { display: grid; grid-template-columns: 1fr 2fr auto; gap: 1rem; align-items: center; }
+        @media(max-width: 768px) { .admin-controls-grid { grid-template-columns: 1fr; } }
+
+        .player-profile-container { background: #ffffff; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary); }
+        .player-title-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .matches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+        .match-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; border-right: 4px solid var(--accent); display: flex; flex-direction: column; justify-content: space-between; }
+        .match-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 0.5rem; margin-bottom: 0.75rem; }
+        .stat-box { background: #ffffff; padding: 0.5rem; border-radius: 0.4rem; border: 1px solid #e2e8f0; text-align: center; }
+        .stat-label { font-size: 0.68rem; color: var(--text-light); word-break: break-word; }
+        .stat-val { font-weight: 800; color: var(--text); font-size: 0.85rem; }
+
+        .btn-add-match { background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 800; cursor: pointer; margin-top: 1rem; font-size: 0.9rem; }
+        .btn-edit-match { background: var(--secondary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: 700; cursor: pointer; font-size: 0.8rem; flex: 1; }
+        .btn-delete-match { background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: 700; cursor: pointer; font-size: 0.8rem; flex: 1; }
+
+        .admin-floating-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; padding: 0.85rem 2rem; border-radius: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; gap: 1rem; align-items: center; z-index: 9999; border: 2px solid var(--accent); flex-wrap: wrap; justify-content: center; width: 90%; max-width: 600px; }
+        .btn-save { background: var(--success); color: white; padding: 0.6rem 1.5rem; border-radius: 2rem; border: none; font-weight: 900; cursor: pointer; flex: 1; text-align: center;}
+        .btn-cancel { background: var(--danger); color: white; padding: 0.6rem 1.5rem; border-radius: 2rem; border: none; font-weight: 900; cursor: pointer; flex: 1; text-align: center;}
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 999999; padding: 1rem; overflow-y: auto; }
+        .modal-card { background: white; padding: 2rem; border-radius: 1rem; max-width: 650px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border-top: 6px solid var(--accent); max-height: 90vh; overflow-y: auto; text-align: right; }
+        .hidden { display: none !important; }
+
+        .dynamic-stat-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; background: #f1f5f9; padding: 0.5rem; border-radius: 0.5rem; }
+        .dynamic-stat-row input { text-align: right; }
+    </style>
+</head>
+<body>
+
+    <div id="authSection">
+        <div class="login-card">
+            <div class="profile-badge-container">
+                <img src="https://i.imgur.com/yctGfBO.jpeg" alt="حمزة ابوزيد" class="analyst-avatar">
+            </div>
+            <h1>منصة تحليل الأداء</h1>
+            <p>إشراف الكابتن: حمزة ابوزيد</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="passCode">أدخل كود المرور الخاص بك:</label>
+                    <input type="password" id="passCode" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn">دخول للنظام التفاعلي</button>
+                <div id="statusMessage" style="margin-top:1rem; color:var(--danger); font-weight:bold;" class="hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboardSection" class="hidden">
+        <div class="dash-header">
+            <h2 id="dashHeaderTitle">لوحة تحكم الكابتن حمزة ابوزيد الشاملة</h2>
+            <button onclick="logout()" class="btn" style="width: auto; background: var(--danger); padding: 0.5rem 1.25rem;">تسجيل الخروج</button>
+        </div>
+
+        <div id="welcomeMessageContainer"></div>
+
+        <div class="team-analytics-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                <h3 style="color:var(--primary); font-size:1.2rem; font-weight:900;">📊 السجل الإحصائي والتحليلي العام للفريق</h3>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <button id="adminAddTeamMatchBtn" onclick="toggleTeamInlineForm()" class="btn-add-match hidden" style="margin:0;">➕ إضافة مباراة للفريق</button>
+                    <button id="adminDeleteTeamMatchBtn" onclick="openDeleteGlobalMatchModal()" class="btn-delete-match hidden" style="background:var(--danger); padding:0.6rem 1rem; margin-top:0; width:auto;">🗑️ حذف مباراة عامة</button>
+                </div>
+            </div>
+
+            <div class="team-summary-grid">
+                <div class="team-stat-box"><div class="team-stat-label">المباريات</div><div class="team-stat-val" id="teamTotalMatches">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">فوز</div><div class="team-stat-val" style="color:var(--success);" id="teamWins">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">تعادل</div><div class="team-stat-val" style="color:var(--accent);" id="teamDraws">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">هزيمة</div><div class="team-stat-val" style="color:var(--danger);" id="teamLosses">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">إجمالي التمريرات</div><div class="team-stat-val" id="teamTotalPasses">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">الأهداف المسجلة</div><div class="team-stat-val" style="color:var(--success);" id="teamTotalGoals">0</div></div>
+            </div>
+
+            <div id="teamInlineForm" class="hidden" style="background:#f1f5f9; padding:1.25rem; border-radius:0.75rem; margin-bottom:1rem; border:2px dashed var(--secondary);">
+                <h4 style="color:var(--secondary); margin-bottom:1rem;">➕ إضافة تفاصيل مباراة الفريق الجديدة</h4>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                    <div class="form-group"><label>اسم المباراة:</label><input type="text" id="tm_matchName" class="form-control" value="شبان قنا ضد ..."></div>
+                    <div class="form-group"><label>النتيجة (فوز/تعادل/هزيمة):</label><input type="text" id="tm_result" class="form-control" value="فوز"></div>
+                    <div class="form-group"><label>إجمالي التمريرات:</label><input type="number" id="tm_passes" class="form-control" value="150"></div>
+                    <div class="form-group"><label>أهداف لنا:</label><input type="number" id="tm_goalsFor" class="form-control" value="2"></div>
+                    <div class="form-group"><label>أهداف علينا:</label><input type="number" id="tm_goalsAgainst" class="form-control" value="0"></div>
+                </div>
+                <div style="display:flex; gap:1rem;">
+                    <button onclick="submitTeamMatchInline()" class="btn" style="background:var(--success); width:auto; padding:0.5rem 2rem;">حفظ وإضافة المباراة</button>
+                    <button onclick="toggleTeamInlineForm()" class="btn" style="background:var(--danger); width:auto; padding:0.5rem 2rem;">إلغاء</button>
+                </div>
+            </div>
+
+            <div class="chart-box" style="width:100%; margin-top:1.5rem; background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                <h4 style="margin-bottom:0.75rem; font-size:0.9rem; color:var(--primary); text-align:center;">المنحنى الإحصائي ونسب التمرير العامة للفريق</h4>
+                <canvas id="teamPerformanceChart" style="max-height: 250px; width:100%;"></canvas>
+            </div>
+        </div>
+
+        <!-- لوحة التحكم الإدارية للأدمن والمدير الفني -->
+        <div id="adminPanel" class="admin-box hidden">
+            <h3>📩 لوحة التوجيهات الفنية: إرسال رسائل وتعليمات للاعبي الفريق</h3>
+            <div class="admin-controls-grid">
+                <select id="msgPlayerSelect" class="form-control" style="letter-spacing: normal;"></select>
+                <input type="text" id="customPlayerMsg" class="form-control" style="letter-spacing: normal; text-align:right;" placeholder="اكتب التعليمات أو الرسالة هنا..." />
+                <button onclick="sendPlayerMessage()" class="btn" style="background: var(--accent);">إرسال الرسالة الآن</button>
+            </div>
+
+            <!-- قسم إضافة لاعب جديد للنظام (للأدمن فقط) -->
+            <div id="addNewPlayerSection" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed var(--border);">
+                <h3 style="color:var(--secondary); margin-bottom:1rem; font-size:1.1rem;">👤 إضافة لاعب جديد للنظام</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem; align-items:end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>اسم اللاعب:</label>
+                        <input type="text" id="newPlayerName" class="form-control" placeholder="اسم اللاعب">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>رقم القميص:</label>
+                        <input type="number" id="newPlayerNumber" class="form-control" placeholder="10">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>المركز:</label>
+                        <input type="text" id="newPlayerPosition" class="form-control" placeholder="وسط / مهاجم">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>كود المرور (الباسورد):</label>
+                        <input type="text" id="newPlayerPasscode" class="form-control" placeholder="123456">
+                    </div>
+                    <button onclick="addNewPlayer()" class="btn" style="background:var(--success); height: 45px; width:100%;">➕ إضافة اللاعب</button>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <input type="text" id="searchInput" class="form-control" style="text-align:right; letter-spacing:normal;" placeholder="ابحث باسم اللاعب أو رقمه أو مركزه..." oninput="filterPlayers()">
+        </div>
+        
+        <div id="contentContainer"></div>
+    </div>
+
+    <div id="adminFloatingBar" class="admin-floating-bar hidden">
+        <button onclick="saveAllChangesToDatabase()" class="btn-save">💾 حفظ التغييرات للجميع</button>
+        <button onclick="cancelAndReloadDatabase()" class="btn-cancel">❌ إلغاء التعديلات</button>
+    </div>
+
+    <!-- نافذة إضافة وتعديل مباراة لاعب الخانات الديناميكية -->
+    <div id="playerMatchEditorModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 id="matchModalTitle" style="color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--accent); padding-bottom:0.5rem;">📝 إضافة/تعديل مباراة للاعب</h3>
+            
+            <input type="hidden" id="editor_playerId">
+            <input type="hidden" id="editor_matchId">
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                <div class="form-group"><label>اسم المباراة:</label><input type="text" id="editor_matchName" class="form-control"></div>
+                <div class="form-group"><label>دقائق اللعب:</label><input type="text" id="editor_minutes" class="form-control" value="90 دقيقة"></div>
+                <div class="form-group"><label>الأهداف:</label><input type="number" id="editor_goals" class="form-control" value="0"></div>
+                <div class="form-group"><label>التقييم:</label><input type="text" id="editor_rating" class="form-control" value="8.0"></div>
+            </div>
+
+            <div class="form-group">
+                <label>ملاحظات التحليل الفني:</label>
+                <input type="text" id="editor_notes" class="form-control" style="text-align:right;" value="أداء مميز والتزام تكتيكي عالي.">
+            </div>
+
+            <div style="margin-top:1.5rem; margin-bottom:1rem; background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h4 style="color:var(--secondary); font-size:0.95rem;">📊 الخانات والإحصائيات التكتيكية (يمكنك إضافة أو حذف أو تعديل أي اسم وقيمة):</h4>
+                    <button type="button" onclick="addDynamicStatRow()" class="btn" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem; background:var(--accent);">➕ إضافة خانة إحصائية جديدة</button>
+                </div>
+
+                <div id="dynamicStatsContainer"></div>
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+                <button onclick="savePlayerMatchFromModal()" class="btn" style="background:var(--success); width:auto; padding:0.6rem 2rem;">💾 حفظ المباراة</button>
+                <button onclick="closePlayerMatchModal()" class="btn" style="background:var(--danger); width:auto; padding:0.6rem 2rem;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="playerMessageModal" class="modal-overlay hidden">
+        <div class="modal-card" style="text-align:center;">
+            <h3 style="color:var(--primary); margin-bottom:1rem;">📢 رسالة هامة من الجهاز الفني</h3>
+            <p id="modalMsgText" style="font-size:1.1rem; font-weight:700; color:var(--secondary); margin-bottom:1.5rem; line-height:1.5;"></p>
+            <button onclick="acknowledgeMessage()" class="btn" style="background:var(--success);">موافق (فهمت الرسالة)</button>
+        </div>
+    </div>
+
+    <div id="deleteGlobalModal" class="modal-overlay hidden">
+        <div class="modal-card" style="text-align:center;">
+            <h3 style="color:var(--primary); margin-bottom:1rem;">🗑️ حذف مباراة عامة لجميع اللاعبين</h3>
+            <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:1rem;">اختر اسم المباراة التي تريد حذفها نهائياً:</p>
+            <select id="globalMatchSelectForDelete" class="form-control" style="margin-bottom:1.5rem;"></select>
+            <div style="display:flex; gap:1rem; justify-content:center;">
+                <button onclick="confirmDeleteGlobalMatch()" class="btn" style="background:var(--danger); width:auto; padding:0.5rem 1.5rem;">حذف نهائي</button>
+                <button onclick="closeDeleteGlobalMatchModal()" class="btn" style="background:var(--secondary); width:auto; padding:0.5rem 1.5rem;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const initialTeamMatches = [
+            { matchName: "شبان قنا ضد المدينة المنورة", result: "تعادل", passes: 218, goalsFor: 1, goalsAgainst: 1, resultStatus: "1-1" }
+        ];
+
+        const initialPlayers = [
+            { 
+                id: 1, name: "احمد صلاح", number: 1, position: "حارس مرمى", passCode: "841923", message: "", 
+                matches: [{ 
+                    id: "m_1", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90 دقيقة", goals: 0, rating: "8.2", notes: "تصدى لفرصتين محققتين وتغطية جيدة في الكرات العرضية.",
+                    stats: [
+                        { label: "تمريرات قصيرة", value: "15" },
+                        { label: "تمريرات طويلة", value: "12" },
+                        { label: "استخلاص كرات", value: "8" },
+                        { label: "تشتيت", value: "5" },
+                        { label: "التحامات هوائية", value: "4" }
+                    ]
+                }] 
+            },
+            { 
+                id: 2, name: "فهد منصور", number: 2, position: "مدافع", passCode: "392158", message: "", 
+                matches: [{ 
+                    id: "m_2", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90 دقيقة", goals: 0, rating: "7.9", notes: "تغطية دفاعية جيدة وإبعاد متميز للكرات العرضية الخطيرة.",
+                    stats: [
+                        { label: "تمريرات قصيرة", value: "28" },
+                        { label: "تمريرات طويلة", value: "6" },
+                        { label: "استخلاص", value: "9" },
+                        { label: "تشتيت", value: "7" },
+                        { label: "هوائي", value: "6" }
+                    ]
+                }] 
+            },
+            { 
+                id: 3, name: "محمد (بوبا)", number: 3, position: "مهاجم", passCode: "715392", message: "", 
+                matches: [{ 
+                    id: "m_3", matchName: "شبان قنا ضد المدينة المنورة", minutes: "75 دقيقة", goals: 1, rating: "8.4", notes: "التحام قوي وإحراز هدف من فرصة داخل منطقة الجزاء.",
+                    stats: [
+                        { label: "تمريرات قصيرة", value: "6" },
+                        { label: "تمريرات طويلة", value: "1" },
+                        { label: "هوائي", value: "6" }
+                    ]
+                }] 
+            }
+        ];
+
+        let playersFullDatabase = [];
+        let teamOverallMatches = [];
+
+        function normalizeMatchData(match) {
+            if (!match.id) match.id = 'm_' + Math.random().toString(36).substr(2, 9);
+            if (!match.stats) {
+                match.stats = [];
+                if (match.passesShort !== undefined) match.stats.push({ label: "تمريرات قصيرة", value: match.passesShort });
+                if (match.passesLong !== undefined) match.stats.push({ label: "تمريرات طويلة", value: match.passesLong });
+                if (match.recovery !== undefined) match.stats.push({ label: "استخلاص", value: match.recovery });
+                if (match.clearances !== undefined) match.stats.push({ label: "تشتيت", value: match.clearances });
+                if (match.aerialsWon !== undefined) match.stats.push({ label: "هوائي", value: match.aerialsWon });
+            }
+            return match;
+        }
+
+        try {
+            const stored = localStorage.getItem('hz_players_db');
+            playersFullDatabase = stored ? JSON.parse(stored) : initialPlayers;
+            playersFullDatabase.forEach(p => {
+                p.matches = (p.matches || []).map(normalizeMatchData);
+            });
+        } catch(e) { playersFullDatabase = initialPlayers; }
+        
+        try {
+            teamOverallMatches = JSON.parse(localStorage.getItem('hz_team_matches')) || initialTeamMatches;
+        } catch(e) { teamOverallMatches = initialTeamMatches; }
+
+        let activeDataset = [...playersFullDatabase];
+        let isAdmin = false;
+        let isManager = false;
+        let loggedInPlayer = null;
+        let teamChartInstance = null;
+
+        function saveAllChangesToDatabase() {
+            localStorage.setItem('hz_players_db', JSON.stringify(playersFullDatabase));
+            localStorage.setItem('hz_team_matches', JSON.stringify(teamOverallMatches));
+        }
+
+        function cancelAndReloadDatabase() {
+            if (confirm("هل أنت متأكد من إلغاء التعديلات واستعادة النسخة الأخيرة؟")) {
+                try {
+                    playersFullDatabase = JSON.parse(localStorage.getItem('hz_players_db')) || initialPlayers;
+                    teamOverallMatches = JSON.parse(localStorage.getItem('hz_team_matches')) || initialTeamMatches;
+                } catch(e) {}
+                activeDataset = [...playersFullDatabase];
+                updateTeamAnalyticsUI();
+                displayPlayers(activeDataset);
+                alert("↩️ تم إلغاء التعديلات والتراجع بنجاح.");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('hz_is_admin_session') === 'true') {
+                isAdmin = true;
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('addNewPlayerSection').classList.remove('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.remove('hidden');
+                document.getElementById('adminDeleteTeamMatchBtn').classList.remove('hidden');
+                document.getElementById('adminFloatingBar').classList.remove('hidden');
+                populateAdminSelect();
+                renderDashboard("لوحة تحكم الكابتن حمزة ابوزيد الشاملة");
+            }
+        });
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const passCode = document.getElementById('passCode').value.trim();
+            const statusMsg = document.getElementById('statusMessage');
+            const welcomeBox = document.getElementById('welcomeMessageContainer');
+            statusMsg.classList.add('hidden');
+            welcomeBox.innerHTML = '';
+
+            if (passCode === "775533002007") {
+                isAdmin = true; isManager = false;
+                localStorage.setItem('hz_is_admin_session', 'true');
+                activeDataset = [...playersFullDatabase];
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('addNewPlayerSection').classList.remove('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.remove('hidden');
+                document.getElementById('adminDeleteTeamMatchBtn').classList.remove('hidden');
+                document.getElementById('adminFloatingBar').classList.remove('hidden');
+                populateAdminSelect();
+                renderDashboard("لوحة تحكم الكابتن حمزة ابوزيد الشاملة");
+            } 
+            else if (passCode === "99113355") {
+                isAdmin = false; isManager = true;
+                localStorage.setItem('hz_is_admin_session', 'false');
+                activeDataset = [...playersFullDatabase];
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('addNewPlayerSection').classList.add('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminDeleteTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminFloatingBar').classList.add('hidden');
+                populateAdminSelect();
+                renderDashboard("لوحة متابعة المدير الفني (إشراف ومتابعة ورسائل)");
+            } 
+            else {
+                isAdmin = false; isManager = false;
+                localStorage.setItem('hz_is_admin_session', 'false');
+                document.getElementById('adminPanel').classList.add('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminDeleteTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminFloatingBar').classList.add('hidden');
+                
+                const targetPlayer = playersFullDatabase.find(p => String(p.passCode) === String(passCode));
+                if (targetPlayer) {
+                    loggedInPlayer = targetPlayer;
+                    activeDataset = [targetPlayer];
+                    welcomeBox.innerHTML = `<div class="welcome-banner">مرحبا بك ايها الاعب ${targetPlayer.name}، نتمني لك التوفيق والتميز</div>`;
+                    renderDashboard(`السجل الإحصائي الشخصي: ${targetPlayer.name}`);
+                    
+                    if (targetPlayer.message && targetPlayer.message !== "") {
+                        document.getElementById('modalMsgText').innerText = targetPlayer.message;
+                        document.getElementById('playerMessageModal').classList.remove('hidden');
+                    }
+                } else {
+                    statusMsg.innerText = "كلمة المرور غير صحيحة، يرجى إعادة المحاولة.";
+                    statusMsg.classList.remove('hidden');
+                }
+            }
+        }
+
+        // خاصية إضافة لاعب جديد من لوحة الأدمن
+        function addNewPlayer() {
+            const name = document.getElementById('newPlayerName').value.trim();
+            const number = parseInt(document.getElementById('newPlayerNumber').value);
+            const position = document.getElementById('newPlayerPosition').value.trim();
+            const passCode = document.getElementById('newPlayerPasscode').value.trim();
+
+            if (!name || isNaN(number) || !position || !passCode) {
+                alert('يرجى كتابة كافة بيانات اللاعب (الاسم، الرقم، المركز، كود المرور)');
+                return;
+            }
+
+            const exists = playersFullDatabase.some(p => String(p.passCode) === String(passCode));
+            if (exists || passCode === "775533002007" || passCode === "99113355") {
+                alert('كود المرور هذا مستخدم بالفعل! يرجى اختيار كود آخر.');
+                return;
+            }
+
+            const newPlayer = {
+                id: Date.now(),
+                name: name,
+                number: number,
+                position: position,
+                passCode: passCode,
+                message: "",
+                matches: []
+            };
+
+            playersFullDatabase.push(newPlayer);
+            saveAllChangesToDatabase();
+            populateAdminSelect();
+            refreshActiveDataset();
+            displayPlayers(activeDataset);
+
+            document.getElementById('newPlayerName').value = '';
+            document.getElementById('newPlayerNumber').value = '';
+            document.getElementById('newPlayerPosition').value = '';
+            document.getElementById('newPlayerPasscode').value = '';
+
+            alert(`✅ تم إضافة اللاعب (${name}) بنجاح!\nكلمة المرور الخاصة به هي: ${passCode}`);
+        }
+
+        // خاصية حذف لاعب بالكامل للأدمن
+        function deletePlayer(playerId) {
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (!player) return;
+
+            if (confirm(`هل أنت متأكد من حذف اللاعب (${player.name}) وكافة بياناته ومبارياته نهائياً؟`)) {
+                playersFullDatabase = playersFullDatabase.filter(p => String(p.id) !== String(playerId));
+                saveAllChangesToDatabase();
+                populateAdminSelect();
+                refreshActiveDataset();
+                displayPlayers(activeDataset);
+                alert(`✅ تم حذف اللاعب (${player.name}) بنجاح.`);
+            }
+        }
+
+        function updateTeamAnalyticsUI() {
+            let wins = 0, draws = 0, losses = 0, totalPasses = 0, totalGoals = 0;
+            teamOverallMatches.forEach(m => {
+                if (m.result === "فوز") wins++;
+                else if (m.result === "تعادل") draws++;
+                else if (m.result === "هزيمة") losses++;
+                totalPasses += parseInt(m.passes) || 0;
+                totalGoals += parseInt(m.goalsFor) || 0;
+            });
+
+            document.getElementById('teamTotalMatches').innerText = teamOverallMatches.length;
+            document.getElementById('teamWins').innerText = wins;
+            document.getElementById('teamDraws').innerText = draws;
+            document.getElementById('teamLosses').innerText = losses;
+            document.getElementById('teamTotalPasses').innerText = totalPasses;
+            document.getElementById('teamTotalGoals').innerText = totalGoals;
+
+            const chartEl = document.getElementById('teamPerformanceChart');
+            if (!chartEl || typeof Chart === 'undefined') return;
+            const ctxTeam = chartEl.getContext('2d');
+
+            if (teamChartInstance) teamChartInstance.destroy();
+            teamChartInstance = new Chart(ctxTeam, {
+                type: 'bar',
+                data: {
+                    labels: teamOverallMatches.map(m => `${m.matchName} (${m.resultStatus || '0-0'})`),
+                    datasets: [{
+                        label: 'نسب التمرير والإحصائيات العامة',
+                        data: teamOverallMatches.map(m => m.passes),
+                        backgroundColor: teamOverallMatches.map(m => m.result === "فوز" ? 'rgba(16, 185, 129, 0.7)' : (m.result === "تعادل" ? 'rgba(245, 158, 11, 0.7)' : 'rgba(239, 68, 68, 0.7)')),
+                        borderColor: '#0f172a', borderWidth: 1.5, borderRadius: 6
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function toggleTeamInlineForm() {
+            document.getElementById('teamInlineForm').classList.toggle('hidden');
+        }
+
+        function submitTeamMatchInline() {
+            const matchName = document.getElementById('tm_matchName').value;
+            const result = document.getElementById('tm_result').value;
+            const passes = parseInt(document.getElementById('tm_passes').value) || 0;
+            const goalsFor = parseInt(document.getElementById('tm_goalsFor').value) || 0;
+            const goalsAgainst = parseInt(document.getElementById('tm_goalsAgainst').value) || 0;
+
+            teamOverallMatches.push({
+                matchName, result, passes, goalsFor, goalsAgainst, resultStatus: `${goalsFor}-${goalsAgainst}`
+            });
+
+            toggleTeamInlineForm();
+            updateTeamAnalyticsUI();
+            saveAllChangesToDatabase();
+        }
+
+        function openAddMatchModal(playerId) {
+            document.getElementById('matchModalTitle').innerText = '➕ إضافة مباراة جديدة للاعب';
+            document.getElementById('editor_playerId').value = playerId;
+            document.getElementById('editor_matchId').value = '';
+            document.getElementById('editor_matchName').value = 'شبان قنا ضد ...';
+            document.getElementById('editor_minutes').value = '90 دقيقة';
+            document.getElementById('editor_goals').value = '0';
+            document.getElementById('editor_rating').value = '8.0';
+            document.getElementById('editor_notes').value = 'أداء مميز والتزام تكتيكي عالي.';
+
+            const defaultStats = [
+                { label: "تمريرات قصيرة", value: "20" },
+                { label: "تمريرات طويلة", value: "5" },
+                { label: "استخلاص كرات", value: "4" },
+                { label: "تشتيت", value: "3" },
+                { label: "التحامات هوائية", value: "2" }
+            ];
+            renderDynamicStatsInput(defaultStats);
+            document.getElementById('playerMatchEditorModal').classList.remove('hidden');
+        }
+
+        function openEditMatchModal(playerId, matchId) {
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (!player) return;
+            const match = player.matches.find(m => String(m.id) === String(matchId));
+            if (!match) return;
+
+            document.getElementById('matchModalTitle').innerText = `✏️ تعديل مباراة: ${match.matchName}`;
+            document.getElementById('editor_playerId').value = playerId;
+            document.getElementById('editor_matchId').value = matchId;
+            document.getElementById('editor_matchName').value = match.matchName || '';
+            document.getElementById('editor_minutes').value = match.minutes || '90 دقيقة';
+            document.getElementById('editor_goals').value = match.goals || 0;
+            document.getElementById('editor_rating').value = match.rating || '8.0';
+            document.getElementById('editor_notes').value = match.notes || '';
+
+            renderDynamicStatsInput(match.stats || []);
+            document.getElementById('playerMatchEditorModal').classList.remove('hidden');
+        }
+
+        function closePlayerMatchModal() {
+            document.getElementById('playerMatchEditorModal').classList.add('hidden');
+        }
+
+        function renderDynamicStatsInput(statsArray) {
+            const container = document.getElementById('dynamicStatsContainer');
+            container.innerHTML = '';
+
+            statsArray.forEach((stat, idx) => {
+                container.innerHTML += `
+                    <div class="dynamic-stat-row" id="statRow_${idx}">
+                        <input type="text" class="form-control stat-label-input" value="${stat.label}" placeholder="اسم الإحصائية">
+                        <input type="text" class="form-control stat-val-input" value="${stat.value}" placeholder="القيمة">
+                        <button type="button" onclick="removeDynamicStatRow(${idx})" class="btn-delete-match" style="width:auto; margin-top:0; padding:0.5rem 0.8rem;">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addDynamicStatRow() {
+            const container = document.getElementById('dynamicStatsContainer');
+            const newIndex = container.children.length;
+            const div = document.createElement('div');
+            div.className = 'dynamic-stat-row';
+            div.id = `statRow_${newIndex}`;
+            div.innerHTML = `
+                <input type="text" class="form-control stat-label-input" value="إحصائية جديدة" placeholder="اسم الإحصائية">
+                <input type="text" class="form-control stat-val-input" value="0" placeholder="القيمة">
+                <button type="button" onclick="this.parentElement.remove()" class="btn-delete-match" style="width:auto; margin-top:0; padding:0.5rem 0.8rem;">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeDynamicStatRow(index) {
+            const row = document.getElementById(`statRow_${index}`);
+            if (row) row.remove();
+        }
+
+        function savePlayerMatchFromModal() {
+            const playerId = document.getElementById('editor_playerId').value;
+            const matchId = document.getElementById('editor_matchId').value;
+
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (!player) return;
+
+            const statRows = document.querySelectorAll('#dynamicStatsContainer .dynamic-stat-row');
+            const collectedStats = [];
+            statRows.forEach(row => {
+                const labelInput = row.querySelector('.stat-label-input');
+                const valInput = row.querySelector('.stat-val-input');
+                if (labelInput && valInput && labelInput.value.trim() !== "") {
+                    collectedStats.push({
+                        label: labelInput.value.trim(),
+                        value: valInput.value.trim()
+                    });
+                }
+            });
+
+            const matchData = {
+                id: matchId || ('m_' + Math.random().toString(36).substr(2, 9)),
+                matchName: document.getElementById('editor_matchName').value || 'مباراة بدون اسم',
+                minutes: document.getElementById('editor_minutes').value,
+                goals: parseInt(document.getElementById('editor_goals').value) || 0,
+                rating: document.getElementById('editor_rating').value,
+                notes: document.getElementById('editor_notes').value,
+                stats: collectedStats
+            };
+
+            if (matchId) {
+                const existingIndex = player.matches.findIndex(m => String(m.id) === String(matchId));
+                if (existingIndex !== -1) {
+                    player.matches[existingIndex] = matchData;
+                }
+            } else {
+                player.matches.push(matchData);
+            }
+
+            closePlayerMatchModal();
+            refreshActiveDataset();
+            displayPlayers(activeDataset);
+            saveAllChangesToDatabase();
+        }
+
+        function deletePlayerMatch(playerId, matchId) {
+            if (confirm("هل أنت متأكد من حذف هذه المباراة من سجل هذا اللاعب نهائياً؟")) {
+                const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+                if (player) {
+                    player.matches = player.matches.filter(m => String(m.id) !== String(matchId));
+                    refreshActiveDataset();
+                    displayPlayers(activeDataset);
+                    saveAllChangesToDatabase();
+                }
+            }
+        }
+
+        function openDeleteGlobalMatchModal() {
+            const select = document.getElementById('globalMatchSelectForDelete');
+            select.innerHTML = '';
+            
+            let allMatchNames = new Set();
+            teamOverallMatches.forEach(m => allMatchNames.add(m.matchName));
+            playersFullDatabase.forEach(p => {
+                p.matches.forEach(m => allMatchNames.add(m.matchName));
+            });
+
+            if (allMatchNames.size === 0) {
+                alert("لا توجد أي مباريات مسجلة حالياً لحذفها.");
+                return;
+            }
+
+            allMatchNames.forEach(name => {
+                select.innerHTML += `<option value="${name}">${name}</option>`;
+            });
+
+            document.getElementById('deleteGlobalModal').classList.remove('hidden');
+        }
+
+        function closeDeleteGlobalMatchModal() {
+            document.getElementById('deleteGlobalModal').classList.add('hidden');
+        }
+
+        function confirmDeleteGlobalMatch() {
+            const targetName = document.getElementById('globalMatchSelectForDelete').value;
+            if(!targetName) return;
+
+            if (confirm(`هل أنت متأكد من حذف مباراة (${targetName}) من سجل الفريق ومن جميع اللاعبين نهائياً؟`)) {
+                playersFullDatabase.forEach(p => {
+                    p.matches = p.matches.filter(m => m.matchName !== targetName);
+                });
+                
+                teamOverallMatches = teamOverallMatches.filter(m => m.matchName !== targetName);
+                
+                closeDeleteGlobalMatchModal();
+                updateTeamAnalyticsUI();
+                refreshActiveDataset();
+                displayPlayers(activeDataset);
+                saveAllChangesToDatabase();
+                alert(`✅ تم حذف مباراة (${targetName}) بنجاح من كافة السجلات.`);
+            }
+        }
+
+        function refreshActiveDataset() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const isAdminLoggedIn = isAdmin || (localStorage.getItem('hz_is_admin_session') === 'true');
+            if (isAdminLoggedIn || isManager) {
+                activeDataset = query ? playersFullDatabase.filter(p => 
+                    p.name.toLowerCase().includes(query) || 
+                    p.number.toString().includes(query) || 
+                    p.position.toLowerCase().includes(query)
+                ) : [...playersFullDatabase];
+            } else if (loggedInPlayer) {
+                activeDataset = [loggedInPlayer];
+            }
+        }
+
+        function populateAdminSelect() {
+            const select = document.getElementById('msgPlayerSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            playersFullDatabase.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (#${p.number})</option>`;
+            });
+        }
+
+        function sendPlayerMessage() {
+            const playerId = document.getElementById('msgPlayerSelect').value;
+            const msg = document.getElementById('customPlayerMsg').value.trim();
+            if (!msg) { alert('يرجى كتابة الرسالة أولاً'); return; }
+
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (player) {
+                player.message = msg;
+                saveAllChangesToDatabase();
+                alert(`✅ تم إرسال التوجيه الفني بنجاح للاعب: ${player.name}`);
+                document.getElementById('customPlayerMsg').value = '';
+            }
+        }
+
+        function acknowledgeMessage() {
+            if (loggedInPlayer) {
+                loggedInPlayer.message = "";
+                saveAllChangesToDatabase();
+            }
+            document.getElementById('playerMessageModal').classList.add('hidden');
+        }
+
+        function renderDashboard(titleText) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('dashHeaderTitle').innerText = titleText;
+            updateTeamAnalyticsUI();
+            displayPlayers(activeDataset);
+        }
+
+        function displayPlayers(playersArray) {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+
+            const canEdit = isAdmin || (localStorage.getItem('hz_is_admin_session') === 'true');
+
+            playersArray.forEach(player => {
+                let cardHTML = `
+                    <div class="player-profile-container">
+                        <div class="player-title-bar">
+                            <div>
+                                <h3 style="color:var(--primary); font-size:1.25rem;">
+                                    ${player.name} <span style="font-size:0.9rem; color:var(--secondary);">#${player.number} (${player.position})</span>
+                                    <span style="font-size:0.8rem; color:var(--accent); font-weight:bold; margin-right:10px;">[كود المرور: ${player.passCode}]</span>
+                                </h3>
+                            </div>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                ${(canEdit || isManager) ? `<button onclick="openAddMatchModal('${player.id}')" class="btn-add-match" style="margin:0;">➕ إضافة مباراة للاعب</button>` : ''}
+                                ${canEdit ? `<button onclick="deletePlayer('${player.id}')" class="btn-delete-match" style="padding:0.6rem 1rem; font-size:0.85rem; width:auto; margin:0;">🗑️ حذف اللاعب بالكامل</button>` : ''}
+                            </div>
+                        </div>
+
+                        <h4 style="color:var(--secondary); margin-bottom:1rem; font-size:1rem;">سجل المباريات والمواجهات الإحصائية:</h4>
+                        <div class="matches-grid">
+                `;
+
+                (player.matches || []).forEach((m) => {
+                    let statsBoxesHTML = `
+                        <div class="stat-box"><div class="stat-label">الدقائق</div><div class="stat-val">${m.minutes || '90'}</div></div>
+                        <div class="stat-box"><div class="stat-label">الأهداف</div><div class="stat-val" style="color:var(--success);">${m.goals || 0}</div></div>
+                        <div class="stat-box"><div class="stat-label">التقييم</div><div class="stat-val" style="color:var(--accent);">${m.rating || '8.0'}</div></div>
+                    `;
+
+                    if (m.stats && Array.isArray(m.stats)) {
+                        m.stats.forEach(st => {
+                            statsBoxesHTML += `<div class="stat-box"><div class="stat-label">${st.label}</div><div class="stat-val">${st.value}</div></div>`;
+                        });
+                    }
+
+                    cardHTML += `
+                        <div class="match-card">
+                            <div>
+                                <div style="font-weight:800; color:var(--primary); margin-bottom:0.75rem; font-size:0.95rem;">${m.matchName}</div>
+                                <div class="match-stats-grid">
+                                    ${statsBoxesHTML}
+                                </div>
+                                <p style="font-size:0.8rem; color:var(--text-light); margin-top:0.5rem; line-height:1.4;"><strong>تحليل:</strong> ${m.notes || ''}</p>
+                            </div>
+                            
+                            ${canEdit ? `
+                                <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                                    <button onclick="openEditMatchModal('${player.id}', '${m.id}')" class="btn-edit-match">✏️ تعديل الخانات</button>
+                                    <button onclick="deletePlayerMatch('${player.id}', '${m.id}')" class="btn-delete-match">🗑️ حذف المباراة</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                cardHTML += `</div></div>`;
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        function filterPlayers() {
+            refreshActiveDataset();
+            displayPlayers(activeDataset);
+        }
+
+        function logout() {
+            isAdmin = false;
+            isManager = false;
+            loggedInPlayer = null;
+            localStorage.setItem('hz_is_admin_session', 'false');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
