@@ -1,1 +1,1097 @@
-google-site-verification: google8f1480e6e27f1b24.html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- كود إثبات ملكية موقع جوجل -->
+    <meta name="google-site-verification" content="google8f1480e6e27f1b24" />
+
+    <title>منصة تحليل الأداء - النظام التفاعلي الشامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #0f172a; --secondary: #1e3a8a; --accent: #f59e0b;
+            --bg: #f8fafc; --card-bg: rgba(255, 255, 255, 0.98);
+            --text: #1e293b; --text-light: #64748b; --danger: #ef4444;
+            --success: #10b981; --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+
+        body {
+            background: linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.55)), 
+                        url('https://i.imgur.com/yctGfBO.jpeg') no-repeat center center fixed;
+            background-size: cover; color: var(--text); min-height: 100vh; display: flex; flex-direction: column;
+        }
+
+        #authSection { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1rem; }
+
+        .login-card {
+            background: var(--card-bg); backdrop-filter: blur(10px); width: 100%; max-width: 420px;
+            padding: 2.5rem; border-radius: 1.25rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            text-align: center; border: 2px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .profile-badge-container { width: 100px; height: 100px; margin: 0 auto 1.25rem auto; }
+        .analyst-avatar { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--accent); object-fit: cover; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); background-color: #e2e8f0; }
+
+        .login-card h1 { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 0.25rem; }
+        .login-card p { color: var(--secondary); font-size: 0.9rem; font-weight: 700; margin-bottom: 1.75rem; }
+
+        .form-group { margin-bottom: 1rem; text-align: right; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 700; color: var(--text); font-size: 0.85rem; }
+        .form-control { width: 100%; padding: 0.75rem 0.9rem; border: 2px solid var(--border); border-radius: 0.65rem; font-size: 0.95rem; background-color: #f8fafc; text-align: center; }
+
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), #0f172a); color: white; border: none;
+            padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 800; border-radius: 0.65rem;
+            cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .welcome-banner { background: linear-gradient(135deg, #1e3a8a, #0f172a); color: white; padding: 1.2rem; border-radius: 0.75rem; margin-bottom: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; border-right: 6px solid var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        #dashboardSection { flex: 1; padding: 2rem; background-color: rgba(248, 250, 252, 0.97); min-height: 100vh; padding-bottom: 140px; }
+
+        .dash-header { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 1.25rem 2rem; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 2rem; border-right: 5px solid var(--accent); flex-wrap: wrap; gap: 1rem; }
+
+        .team-analytics-card, .top-scorers-card { background: #ffffff; border-radius: 1rem; padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.06); border-top: 5px solid var(--accent); }
+        .team-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .team-stat-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.85rem; text-align: center; }
+        .team-stat-label { font-size: 0.75rem; color: var(--text-light); font-weight: 700; margin-bottom: 0.25rem; }
+        .team-stat-val { font-size: 1.25rem; font-weight: 900; color: var(--secondary); }
+
+        .admin-box { background: #ffffff; border: 2px dashed var(--accent); border-radius: 1rem; padding: 1.5rem; margin-bottom: 2rem; }
+        .admin-box h3 { color: var(--secondary); margin-bottom: 1rem; font-size: 1.1rem; }
+        .admin-controls-grid { display: grid; grid-template-columns: 1fr 2fr auto; gap: 1rem; align-items: center; }
+        @media(max-width: 768px) { .admin-controls-grid { grid-template-columns: 1fr; } }
+
+        .player-profile-container { background: #ffffff; border-radius: 1rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary); }
+        .player-title-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem; }
+        .matches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+        .match-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem; border-right: 4px solid var(--accent); display: flex; flex-direction: column; justify-content: space-between; }
+        .match-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 0.5rem; margin-bottom: 0.75rem; }
+        .stat-box { background: #ffffff; padding: 0.5rem; border-radius: 0.4rem; border: 1px solid #e2e8f0; text-align: center; }
+        .stat-label { font-size: 0.68rem; color: var(--text-light); word-break: break-word; }
+        .stat-val { font-weight: 800; color: var(--text); font-size: 0.85rem; }
+
+        .btn-add-match { background: var(--success); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-weight: 800; cursor: pointer; margin-top: 1rem; font-size: 0.9rem; }
+        .btn-edit-match { background: var(--secondary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: 700; cursor: pointer; font-size: 0.8rem; flex: 1; }
+        .btn-delete-match { background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 0.4rem; font-weight: 700; cursor: pointer; font-size: 0.8rem; flex: 1; }
+
+        .admin-floating-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; padding: 0.85rem 2rem; border-radius: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; gap: 1rem; align-items: center; z-index: 9999; border: 2px solid var(--accent); flex-wrap: wrap; justify-content: center; width: 90%; max-width: 600px; }
+        .btn-save { background: var(--success); color: white; padding: 0.6rem 1.5rem; border-radius: 2rem; border: none; font-weight: 900; cursor: pointer; flex: 1; text-align: center;}
+        .btn-undo { background: var(--accent); color: #000; padding: 0.6rem 1.5rem; border-radius: 2rem; border: none; font-weight: 900; cursor: pointer; flex: 1; text-align: center;}
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 999999; padding: 1rem; overflow-y: auto; }
+        .modal-card { background: white; padding: 2rem; border-radius: 1rem; max-width: 720px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border-top: 6px solid var(--accent); max-height: 90vh; overflow-y: auto; text-align: right; }
+        .hidden { display: none !important; }
+
+        .dynamic-stat-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; background: #f1f5f9; padding: 0.5rem; border-radius: 0.5rem; }
+        .dynamic-stat-row input { text-align: right; }
+        
+        .scorer-item { display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:0.75rem 1.25rem; border-radius:0.5rem; border:1px solid var(--border); margin-bottom:0.5rem; }
+        .scorer-name { font-weight:bold; color:var(--secondary); }
+        .scorer-goals { font-weight:900; color:var(--success); font-size:1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div id="authSection" class="">
+        <div class="login-card">
+            <div class="profile-badge-container">
+                <img src="https://i.imgur.com/yctGfBO.jpeg" alt="HAMZA ABOZID" class="analyst-avatar">
+            </div>
+            <h1>منصة تحليل الأداء</h1>
+            <p>إشراف الكابتن: HAMZA ABOZID</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="passCode">أدخل كود المرور الخاص بك:</label>
+                    <input type="password" id="passCode" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn">دخول للنظام التفاعلي</button>
+                <div id="statusMessage" style="margin-top:1rem; color:var(--danger); font-weight:bold;" class="hidden"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboardSection" class="hidden">
+        <div class="dash-header">
+            <h2 id="dashHeaderTitle">لوحة تحكم الكابتن HAMZA ABOZID الشاملة</h2>
+            <button onclick="logout()" class="btn" style="width: auto; background: var(--danger); padding: 0.5rem 1.25rem;">تسجيل الخروج</button>
+        </div>
+
+        <div id="welcomeMessageContainer"></div>
+
+        <!-- قسم مباريات وإحصائيات الفريق العامة -->
+        <div class="team-analytics-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                <h3 style="color:var(--primary); font-size:1.2rem; font-weight:900;">📊 السجل الإحصائي والتحليلي العام للفريق</h3>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <button id="adminAddTeamMatchBtn" onclick="openTeamMatchModal()" class="btn-add-match" style="margin:0;">➕ إضافة مباراة للفريق</button>
+                </div>
+            </div>
+
+            <div class="team-summary-grid">
+                <div class="team-stat-box"><div class="team-stat-label">المباريات</div><div class="team-stat-val" id="teamTotalMatches">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">فوز</div><div class="team-stat-val" style="color:var(--success);" id="teamWins">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">تعادل</div><div class="team-stat-val" style="color:var(--accent);" id="teamDraws">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">هزيمة</div><div class="team-stat-val" style="color:var(--danger);" id="teamLosses">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">إجمالي التمريرات</div><div class="team-stat-val" id="teamTotalPasses">0</div></div>
+                <div class="team-stat-box"><div class="team-stat-label">الأهداف المسجلة</div><div class="team-stat-val" style="color:var(--success);" id="teamTotalGoals">0</div></div>
+            </div>
+
+            <div class="chart-box" style="width:100%; margin-top:1.5rem; background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                <h4 style="margin-bottom:0.75rem; font-size:0.9rem; color:var(--primary); text-align:center;">المباريات العامة للفريق</h4>
+                <div id="teamMatchesList" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+            </div>
+        </div>
+
+        <!-- قسم أكثر اللاعبين تسجيلاً للأهداف -->
+        <div class="top-scorers-card">
+            <h3 style="color:var(--primary); font-size:1.2rem; font-weight:900; margin-bottom:1rem;">🏆 قائمة هدافي الفريق (أكثر اللاعبين تسجيلاً للأهداف)</h3>
+            <div id="topScorersContainer"></div>
+        </div>
+
+        <!-- لوحة التحكم الإدارية للأدمن والمدير الفني -->
+        <div id="adminPanel" class="admin-box hidden">
+            <h3>📩 لوحة التوجيهات الفنية: إرسال رسائل وتعليمات للاعبي الفريق</h3>
+            <div class="admin-controls-grid">
+                <select id="msgPlayerSelect" class="form-control" style="letter-spacing: normal;"></select>
+                <input type="text" id="customPlayerMsg" class="form-control" style="letter-spacing: normal; text-align:right;" placeholder="اكتب التعليمات أو الرسالة هنا...">
+                <button onclick="sendPlayerMessage()" class="btn" style="background: var(--accent);">إرسال الرسالة الآن</button>
+            </div>
+
+            <!-- قسم إضافة لاعب جديد للنظام -->
+            <div id="addNewPlayerSection" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed var(--border);">
+                <h3 style="color:var(--secondary); margin-bottom:1rem; font-size:1.1rem;">👤 إضافة لاعب جديد للنظام</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem; align-items:end;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>اسم اللاعب:</label>
+                        <input type="text" id="newPlayerName" class="form-control" placeholder="اسم اللاعب">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>رقم القميص:</label>
+                        <input type="number" id="newPlayerNumber" class="form-control" placeholder="10">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>المركز:</label>
+                        <input type="text" id="newPlayerPosition" class="form-control" placeholder="وسط / مهاجم">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>كود المرور (الباسورد):</label>
+                        <input type="text" id="newPlayerPasscode" class="form-control" placeholder="123456">
+                    </div>
+                    <button onclick="addNewPlayer()" class="btn" style="background:var(--success); height: 45px; width:100%;">➕ إضافة اللاعب</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شريط البحث -->
+        <div id="searchContainer" style="margin-bottom: 2rem;" class="hidden">
+            <input type="text" id="searchInput" class="form-control" style="text-align:right; letter-spacing:normal;" placeholder="ابحث باسم اللاعب، رقم القميص، أو المركز..." oninput="filterPlayers()">
+        </div>
+        
+        <div id="contentContainer"></div>
+    </div>
+
+    <!-- شريط الأزرار العائم -->
+    <div id="adminFloatingBar" class="admin-floating-bar hidden">
+        <button onclick="saveAllChangesToDatabase()" class="btn-save">💾 حفظ وتحديث البيانات</button>
+        <button onclick="undoLastAction()" class="btn-undo">↩️ التراجع عن آخر تعديل</button>
+    </div>
+
+    <!-- نافذة إضافة وتعديل مباراة الفريق العامة -->
+    <div id="teamMatchModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 id="teamModalTitle" style="color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--accent); padding-bottom:0.5rem;">تعديل مباراة الفريق</h3>
+            <input type="hidden" id="tm_id">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                <div class="form-group"><label>اسم المباراة:</label><input type="text" id="tm_matchName" class="form-control" placeholder="شبان قنا ضد ..."></div>
+                <div class="form-group"><label>النتيجة (فوز/تعادل/هزيمة):</label><input type="text" id="tm_result" class="form-control" placeholder="فوز"></div>
+                <div class="form-group"><label>إجمالي التمريرات:</label><input type="number" id="tm_passes" class="form-control" placeholder="مثال: 150"></div>
+                <div class="form-group"><label>أهداف لنا:</label><input type="number" id="tm_goalsFor" class="form-control" placeholder="0"></div>
+                <div class="form-group"><label>أهداف علينا:</label><input type="number" id="tm_goalsAgainst" class="form-control" placeholder="0"></div>
+            </div>
+            <div style="display:flex; gap:1rem; justify-content:center;">
+                <button onclick="saveTeamMatch()" class="btn" style="background:var(--success); width:auto; padding:0.6rem 2rem;">💾 حفظ المباراة</button>
+                <button onclick="closeTeamMatchModal()" class="btn" style="background:var(--danger); width:auto; padding:0.6rem 2rem;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة وتعديل مباراة للاعب بنظام الإحصائيات الديناميكي الشامل -->
+    <div id="playerMatchEditorModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 id="matchModalTitle" style="color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--accent); padding-bottom:0.5rem;">📝 إضافة/تعديل مباراة للاعب</h3>
+            
+            <input type="hidden" id="editor_playerId">
+            <input type="hidden" id="editor_matchId">
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                <div class="form-group"><label>اسم المباراة:</label><input type="text" id="editor_matchName" class="form-control" placeholder="مثال: ضد المدينة المنورة"></div>
+                <div class="form-group"><label>دقائق اللعب:</label><input type="text" id="editor_minutes" class="form-control" placeholder="90"></div>
+                <div class="form-group"><label>الأهداف:</label><input type="number" id="editor_goals" class="form-control" placeholder="0"></div>
+                <div class="form-group"><label>التقييم (من 10):</label><input type="text" id="editor_rating" class="form-control" placeholder="8.5"></div>
+            </div>
+
+            <div class="form-group">
+                <label>ملاحظات التحليل الفني:</label>
+                <input type="text" id="editor_notes" class="form-control" style="text-align:right;" placeholder="أضف ملاحظاتك الفنية هنا...">
+            </div>
+
+            <div style="margin-top:1.5rem; margin-bottom:1rem; background:#f8fafc; padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h4 style="color:var(--secondary); font-size:0.95rem;">📊 تفاصيل وإجراءات المباراة (من ملف الـ PDF بالتفصيل الكامل):</h4>
+                    <button type="button" onclick="addDynamicStatRow()" class="btn" style="width:auto; padding:0.4rem 1rem; font-size:0.8rem; background:var(--accent);">➕ إضافة إجراء جديد</button>
+                </div>
+                <div id="dynamicStatsContainer"></div>
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+                <button onclick="savePlayerMatchFromModal()" class="btn" style="background:var(--success); width:auto; padding:0.6rem 2rem;">💾 حفظ المباراة</button>
+                <button onclick="closePlayerMatchModal()" class="btn" style="background:var(--danger); width:auto; padding:0.6rem 2rem;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل بيانات اللاعب الأساسية -->
+    <div id="playerEditProfileModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 style="color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--accent); padding-bottom:0.5rem;">✏️ تعديل بيانات اللاعب الأساسية</h3>
+            <input type="hidden" id="edit_prof_id">
+            <div class="form-group"><label>اسم اللاعب:</label><input type="text" id="edit_prof_name" class="form-control" style="text-align:right;"></div>
+            <div class="form-group"><label>رقم القميص:</label><input type="number" id="edit_prof_number" class="form-control"></div>
+            <div class="form-group"><label>المركز:</label><input type="text" id="edit_prof_position" class="form-control" style="text-align:right;"></div>
+            <div class="form-group"><label>كود المرور (الباسورد):</label><input type="text" id="edit_prof_passcode" class="form-control"></div>
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+                <button onclick="savePlayerProfileEdit()" class="btn" style="background:var(--success); width:auto; padding:0.6rem 2rem;">💾 حفظ التعديلات</button>
+                <button onclick="closePlayerEditProfileModal()" class="btn" style="background:var(--danger); width:auto; padding:0.6rem 2rem;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة قراءة الرسائل -->
+    <div id="playerMessageModal" class="modal-overlay hidden">
+        <div class="modal-card" style="text-align:center;">
+            <h3 style="color:var(--primary); margin-bottom:1rem;">📢 رسالة هامة من الجهاز الفني</h3>
+            <p id="modalMsgText" style="font-size:1.1rem; font-weight:700; color:var(--secondary); margin-bottom:1.5rem; line-height:1.5;"></p>
+            <button onclick="acknowledgeMessage()" class="btn" style="background:var(--success);">موافق (فهمت الرسالة)</button>
+        </div>
+    </div>
+
+    <script>
+        let chartsMap = {};
+        
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNgoAiofKBsUFuHP0OEFUr20B1nrCzN9mnUXkAvvTiaiGnIbHChZ7ap3WEB6JtDY80/exec"; 
+
+        const initialTeamMatches = [
+            { id: "tm_1", matchName: "شبان قنا ضد المدينة المنورة", result: "تعادل", passes: 218, goalsFor: 1, goalsAgainst: 1 },
+            { id: "tm_2", matchName: "أسوان ضد شبان قنا", result: "هزيمة", passes: 195, goalsFor: 0, goalsAgainst: 2 },
+            { id: "tm_3", matchName: "شبان قنا ضد المعنا", result: "فوز", passes: 310, goalsFor: 3, goalsAgainst: 0 }
+        ];
+
+        // قاعدة البيانات المطابقة حصرياً وبالتفصيل الممل لملف الـ PDF للمباريات الثلاث
+        const initialPlayers = [
+            { 
+                id: 1, name: "فهد منصور", number: 4, position: "مدافع", passCode: "392158", message: "", 
+                matches: [
+                    { id: "m_1", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "9.0", notes: "أداء دفاعي صلب وممتاز، أظهر تفوقا كبيرا ومسيطرا في الثنائيات الهوائية وقدرة عالية على تشتيت الكرة وإبعاد الخطورة.", stats: [{ label: "تشتيت الكرة", value: "15" }, { label: "كرات هوائية مكسوبة", value: "20" }, { label: "إبعاد خطورة", value: "8" }, { label: "فقدان الكرة", value: "1" }] },
+                    { id: "m_2", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "7.5", notes: "قلب دفاع مميز في التمرير الطويل وأبعد كرات وتحصل على أخطاء وقدم أداء دفاعيا جيداً.", stats: [{ label: "تمريرات طويلة", value: "12" }, { label: "تمريرات قصيرة", value: "8" }, { label: "كرات هوائية مكسوبة", value: "6" }, { label: "كرات ثابتة", value: "5" }, { label: "أخطاء مكتسبة", value: "4" }, { label: "إبعاد من المنطقة", value: "3" }, { label: "تشتيت الكرة", value: "2" }, { label: "استرجاع الكرة", value: "2" }, { label: "تبديل خروج", value: "1" }] }
+                ] 
+            },
+            { 
+                id: 2, name: "أحمد سمير", number: 10, position: "خط وسط / دفاع", passCode: "841923", message: "", 
+                matches: [
+                    { id: "m_4", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 1, rating: "8.5", notes: "أداء شامل ومؤثر، ساهم هجومياً بتسجيل هدف وتواجد بقوة في بناء اللعب مع مساندة دفاعية جيدة.", stats: [{ label: "تمريرات قصيرة", value: "10" }, { label: "تمريرات طويلة", value: "3" }, { label: "تشتيت الكرة", value: "8" }, { label: "كرات هوائية مكسوبة", value: "8" }, { label: "أهداف", value: "1" }] },
+                    { id: "m_5", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "6.5", notes: "قلب دفاع قوي بـ 9 تشتيتات و3 إبعادات وتمرير طويل وتفوق هوائي، لكن ارتكابه لخطأ ضربة جزاء يقلل تقييمه.", stats: [{ label: "تشتيت الكرة", value: "9" }, { label: "تمريرات قصيرة", value: "14" }, { label: "تمريرات طويلة", value: "11" }, { label: "كرات هوائية مكسوبة", value: "4" }, { label: "كرات ثابتة", value: "4" }, { label: "إبعاد من المنطقة", value: "3" }, { label: "استرجاع الكرة", value: "3" }, { label: "فقدان الكرة", value: "3" }, { label: "خطأ ضربة جزاء", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }] },
+                    { id: "m_6", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.5", notes: "صخرة الدفاع في الشوط الذي شارك فيه تميز بدقة تمريراته الطويلة والقصيرة وبناء اللعب من الخلف بثبات.", stats: [{ label: "تمريرات قصيرة", value: "20" }, { label: "تمريرات طويلة", value: "8" }, { label: "تشتيت الكرة", value: "1" }, { label: "كرة عكسية", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }, { label: "فقدان الكرة", value: "1" }, { label: "كرات ثابتة", value: "3" }] }
+                ] 
+            },
+            { 
+                id: 3, name: "أحمد أسعد", number: 21, position: "وسط محوري / ظهير", passCode: "715392", message: "", 
+                matches: [
+                    { id: "m_7", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "8.5", notes: "محطة لعب حيوية جدا ومفتاح مهم للفريق صنع هدفا وشارك بفعالية في التمرير وتنفيذ رميات التماس مع أداء دفاعي قوي.", stats: [{ label: "تمريرات قصيرة", value: "13" }, { label: "رميات تماس", value: "13" }, { label: "تشتيت الكرة", value: "9" }, { label: "استرجاع الكرة", value: "4" }] },
+                    { id: "m_8", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "8.5", notes: "ظهير متألق نفذ 20 رمية تماس وقدم تمريرات عديدة وأدى دوره الدفاعي بامتياز.", stats: [{ label: "رميات تماس", value: "20" }, { label: "تمريرات قصيرة", value: "17" }, { label: "تمريرات طويلة", value: "7" }, { label: "تشتيت الكرة", value: "4" }, { label: "ركونيات", value: "4" }, { label: "كرات هوائية مكسوبة", value: "4" }, { label: "استرجاع الكرة", value: "3" }, { label: "عرضيات", value: "3" }, { label: "كرات ثابتة", value: "2" }, { label: "خطأ مكتسب", value: "1" }, { label: "تسديد على المرمى", value: "1" }] },
+                    { id: "m_9", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.5", notes: "أداء متوازن ومقبول دفاعيا وهجوميا خلال الـ 45 دقيقة المخصصة له.", stats: [{ label: "تمريرات قصيرة", value: "14" }, { label: "عرضيات", value: "1" }, { label: "تشتيت الكرة", value: "1" }, { label: "كرة عكسية", value: "1" }, { label: "كرات هوائية مكسوبة", value: "2" }, { label: "فقدان الكرة", value: "1" }, { label: "خطأ مكتسب", value: "1" }] }
+                ] 
+            },
+            { 
+                id: 4, name: "أحمد صلاح", number: 1, position: "حارس مرمى", passCode: "112233", message: "", 
+                matches: [
+                    { id: "m_10", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "8.0", notes: "تميز بدور الحارس الليبرو بالخروج 8 مرات وبناء اللعب الطويل وتعامله الجيد مع العرضيات.", stats: [{ label: "تمريرات طويلة", value: "22" }, { label: "الخروج من المرمى", value: "8" }, { label: "إبعاد كرتين", value: "2" }, { label: "مسك كرات", value: "6" }] },
+                    { id: "m_11", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "8.0", notes: "حارس جيد جدا قام بتصديين وخرج من المرمى 5 مرات وساهم بفعالية في بناء اللعب.", stats: [{ label: "تمريرات قصيرة", value: "9" }, { label: "تمريرات طويلة", value: "7" }, { label: "الخروج من المرمى", value: "5" }, { label: "كرات ثابتة", value: "4" }, { label: "تصديات", value: "2" }, { label: "كرات ممسوكة", value: "1" }, { label: "خطأ مكتسب", value: "1" }] },
+                    { id: "m_12", matchName: "شبان قنا ضد المعنا", minutes: "30", goals: 0, rating: "6.0", notes: "أداء هادئ وتأمين المرمى في النصف ساعة التي شارك فيها مع تسليم الكرات للزملاء.", stats: [{ label: "تمريرات قصيرة", value: "5" }, { label: "عرضيات", value: "0" }, { label: "كرات ممسوكة", value: "1" }] }
+                ] 
+            },
+            { 
+                id: 5, name: "أحمد الليثي", number: 24, position: "وسط / دفاع", passCode: "445566", message: "", 
+                matches: [
+                    { id: "m_13", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "8.0", notes: "توازن رائع بين الدفاع والوسط وتفوق واضح في الكرات الهوائية ودقة في التمرير.", stats: [{ label: "كرات هوائية مكسوبة", value: "15" }, { label: "تمريرات قصيرة", value: "13" }, { label: "تدخلات ناجحة", value: "2" }, { label: "فقدان الكرة", value: "2" }] },
+                    { id: "m_14", matchName: "أسوان ضد شبان قنا", minutes: "70", goals: 0, rating: "7.0", notes: "حاول المساهمة بـ 11 تمريرة قصيرة وعرضيتين وكسب 3 أخطاء وتم استبداله.", stats: [{ label: "تمريرات قصيرة", value: "11" }, { label: "أخطاء مكتسبة", value: "3" }, { label: "كرات هوائية مكسوبة", value: "2" }, { label: "عرضيات", value: "2" }, { label: "مراوغات ناجحة", value: "1" }, { label: "فقدان الكرة", value: "1" }, { label: "أخطاء مرتكبة", value: "1" }, { label: "تشتيت الكرة", value: "1" }, { label: "تسديد على المرمى", value: "1" }, { label: "استرجاع الكرة", value: "1" }, { label: "تبديل خروج", value: "1" }] },
+                    { id: "m_15", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.5", notes: "حضور جيد وتمريرات منتظمة في الرواق الخاص به طوال فترة تواجده.", stats: [{ label: "تمريرات قصيرة", value: "15" }, { label: "تمريرات طويلة", value: "2" }, { label: "كرات هوائية مكسوبة", value: "2" }, { label: "إبعاد الكرات", value: "1" }, { label: "فقدان الكرة", value: "1" }, { label: "رمية تماس", value: "1" }, { label: "خطأ مكتسب", value: "1" }] }
+                ] 
+            },
+            { 
+                id: 6, name: "علي محسن", number: 19, position: "ظهير جناح", passCode: "778899", message: "", 
+                matches: [
+                    { id: "m_16", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "8.0", notes: "ظهير جناح حركي ساهم بصناعة هدف ولعب 3 عرضيات ورميات تماس ومساندة دفاعية.", stats: [{ label: "رميات تماس", value: "16" }, { label: "كرات هوائية مكسوبة", value: "8" }, { label: "تشتيت الكرة", value: "6" }, { label: "عرضيات", value: "3" }, { label: "فقدان الكرة", value: "1" }] },
+                    { id: "m_17", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "8.0", notes: "ظهير فعال بـ 16 تمريرة قصيرة و4 طويلة ودفاع جيد بـ 5 كرات هوائية و3 تشتيتات.", stats: [{ label: "تمريرات قصيرة", value: "16" }, { label: "رميات تماس", value: "7" }, { label: "استرجاع الكرة", value: "5" }, { label: "كرات هوائية مكسوبة", value: "5" }, { label: "تمريرات طويلة", value: "4" }, { label: "تشتيت الكرة", value: "3" }, { label: "عرضيات", value: "3" }, { label: "إبعاد من المنطقة", value: "1" }, { label: "فقدان الكرة", value: "1" }] },
+                    { id: "m_18", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.5", notes: "نشاط لا يتوقف ومعدل تمريرات قصير قياسي في 45 دقيقة وصناعة هدف مع مساندة دفاعية.", stats: [{ label: "تمريرات قصيرة", value: "34" }, { label: "عرضيات", value: "2" }, { label: "اسيست", value: "1" }, { label: "تشتيت الكرة", value: "1" }, { label: "كرات هوائية مكسوبة", value: "5" }, { label: "فقدان الكرة", value: "2" }, { label: "رميات تماس", value: "8" }] }
+                ] 
+            },
+            { 
+                id: 7, name: "مؤمن طاهر", number: 17, position: "خط وسط", passCode: "554433", message: "", 
+                matches: [
+                    { id: "m_19", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 1, rating: "8.0", notes: "أداء إيجابي تكلل بتسجيل هدف ونشط في استلام وتسليم الكرة وممتاز في الكرات الهوائية.", stats: [{ label: "تسيجل هدف", value: "1" }, { label: "تمريرات قصيرة", value: "12" }, { label: "كرات هوائية مكسوبة", value: "12" }, { label: "استرجاع الكرة", value: "4" }, { label: "فقدان الكرة", value: "4" }] },
+                    { id: "m_20", matchName: "أسوان ضد شبان قنا", minutes: "70", goals: 0, rating: "8.0", notes: "أداء ممتاز في وسط الملعب ودقة تمرير ونجاح في استرجاع الكرة قبل استبداله.", stats: [{ label: "تمريرات قصيرة", value: "16" }, { label: "استرجاع الكرة", value: "5" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "تمريرات طويلة", value: "1" }, { label: "تشتيت الكرة", value: "1" }, { label: "أخطاء مرتكبة", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "فقدان الكرة", value: "1" }, { label: "كرات ثابتة", value: "1" }, { label: "تبديل خروج", value: "1" }] },
+                    { id: "m_21", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.0", notes: "ركيزة أساسية في وسط الملعب بدقة تمرير قصيرة عالية جدا والتحكم في رتم اللعب.", stats: [{ label: "تمريرات قصيرة", value: "30" }, { label: "كرة عكسية", value: "1" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "استرجاع الكرة", value: "1" }, { label: "خطأ مكتسب", value: "1" }, { label: "كرات ثابتة", value: "2" }] }
+                ] 
+            },
+            { 
+                id: 8, name: "عمر جمال", number: 10, position: "لاعب محوري", passCode: "223344", message: "", 
+                matches: [
+                    { id: "m_22", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "6.5", notes: "محوري يستلم الكرة كثيرا ونجح في استرجاعها لكن معدل فقدانه للكرة مرتفع نسبيا.", stats: [{ label: "تمريرات قصيرة", value: "18" }, { label: "استرجاع الكرة", value: "4" }, { label: "فقدان الكرة", value: "6" }] },
+                    { id: "m_23", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "7.5", notes: "نشط في وسط الملعب بتمريراته الكثيرة وكسب الأخطاء واسترجع الكرة لكن فقدها كثيرا.", stats: [{ label: "تمريرات قصيرة", value: "21" }, { label: "فقدان الكرة", value: "7" }, { label: "أخطاء مكتسبة", value: "5" }, { label: "استرجاع الكرة", value: "4" }, { label: "كرات ثابتة", value: "3" }, { label: "ركونيات", value: "2" }, { label: "عرضيات", value: "2" }, { label: "تمريرات طويلة", value: "2" }, { label: "إبعاد من المنطقة", value: "1" }, { label: "رمية تماس", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }, { label: "تشتيت الكرة", value: "1" }] },
+                    { id: "m_24", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.0", notes: "حيوية واضحة في ربط الخطوط وتقديم 25 تمريرة ناجحة في 45 دقيقة وتنظيم إيقاع الفريق.", stats: [{ label: "تمريرات قصيرة", value: "25" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "تسديد على المرمى", value: "1" }, { label: "كرات هوائية مكسوبة", value: "2" }, { label: "فقدان الكرة", value: "3" }, { label: "استرجاع الكرة", value: "1" }, { label: "كرات ثابتة", value: "4" }] }
+                ] 
+            },
+            { 
+                id: 9, name: "عبدالناصر", number: 9, position: "هجوم / جناح", passCode: "998877", message: "", 
+                matches: [
+                    { id: "m_25", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "6.0", notes: "نشط في التمرير القصير وعرضيات وتسديد وسدد على المرمى لكن عانى من فقد الكرة بمعدل مرتفع.", stats: [{ label: "تمريرات قصيرة", value: "11" }, { label: "عرضيات", value: "3" }, { label: "تسديد على المرمى", value: "1" }, { label: "فقدان الكرة", value: "6" }] },
+                    { id: "m_26", matchName: "أسوان ضد شبان قنا", minutes: "90", goals: 0, rating: "6.5", notes: "نشاط هجومي ملحوظ عبر عرضيات وتسديدات، لكن عانى من فقدان الكرة وتمريرات قليلة.", stats: [{ label: "عرضيات", value: "4" }, { label: "تسديد خارج المرمى", value: "2" }, { label: "فقدان الكرة", value: "4" }, { label: "أخطاء مكتسبة", value: "3" }, { label: "مراوغات ناجحة", value: "1" }, { label: "تسديد على المرمى", value: "1" }, { label: "أخطاء مرتكبة", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }, { label: "تمريرات قصيرة", value: "7" }] },
+                    { id: "m_27", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 2, rating: "8.0", notes: "فعالية هجومية خارقة بتسجيل هدفين وتشكل خطورة دائمة رغم كثرة فقدان الكرة تحت الضغط.", stats: [{ label: "أهداف", value: "2" }, { label: "تسديد على المرمى", value: "3" }, { label: "تمريرات قصيرة", value: "12" }, { label: "عرضيات", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "استرجاع الكرة", value: "2" }, { label: "فقدان الكرة", value: "6" }, { label: "أخطاء مكتسبة", value: "1" }] }
+                ] 
+            },
+            { 
+                id: 10, name: "كريم عادل", number: 20, position: "مدافع / وسط", passCode: "113355", message: "", 
+                matches: [
+                    { id: "m_28", matchName: "شبان قنا ضد المدينة المنورة", minutes: "30", goals: 0, rating: "7.0", notes: "بديل قدم إضافة دفاعية جيدة بعد دخوله بكسب كرات هوائية وإبعاد كرات.", stats: [{ label: "كرات هوائية مكسوبة", value: "3" }, { label: "إبعاد من المنطقة", value: "2" }] },
+                    { id: "m_29", matchName: "أسوان ضد شبان قنا", minutes: "30", goals: 0, rating: "6.5", notes: "بديل ساهم في خط الدفاع والوسط بـ 6 تمريرات قصيرة و3 طويلة وكسب كرة هوائية وأبعد كرة.", stats: [{ label: "تمريرات قصيرة", value: "6" }, { label: "تمريرات طويلة", value: "3" }, { label: "تبديل دخول", value: "1" }, { label: "إبعاد من المنطقة", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }, { label: "خطأ مكتسب", value: "1" }, { label: "تشتيت الكرة", value: "1" }, { label: "استرجاع الكرة", value: "1" }, { label: "كرات ثابتة", value: "1" }] },
+                    { id: "m_30", matchName: "شبان قنا ضد المعنا", minutes: "90", goals: 0, rating: "7.0", notes: "مجهود بدني كبير ومستمر طوال الـ 90 دقيقة وتحكم ممتاز في وسط الملعب وإمداد بالتمريرات.", stats: [{ label: "تمريرات قصيرة", value: "59" }, { label: "تمريرات طويلة", value: "8" }, { label: "تشتيت الكرة", value: "10" }, { label: "كرات هوائية مكسوبة", value: "6" }, { label: "إبعاد من المنطقة", value: "2" }, { label: "استرجاع الكرة", value: "2" }, { label: "كرات ثابتة", value: "5" }, { label: "أخطاء مكتسبة", value: "3" }, { label: "كرة عكسية", value: "1" }, { label: "رمية تماس", value: "3" }] }
+                ] 
+            },
+            {
+                id: 11, name: "عمار", number: 11, position: "هجوم / وسط", passCode: "667788", message: "",
+                matches: [
+                    { id: "m_31", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.5", notes: "استغلال مثالي للوقت بصناعة هدفين وتفوق هائل في الصراعات الهوائية وتمريرات طويلة مؤثرة.", stats: [{ label: "تمريرات قصيرة", value: "18" }, { label: "تمريرات طويلة", value: "8" }, { label: "تشتيت الكرة", value: "2" }, { label: "كرات هوائية مكسوبة", value: "8" }, { label: "فقدان الكرة", value: "1" }, { label: "رمية تماس", value: "7" }, { label: "اسيست", value: "2" }] }
+                ]
+            },
+            {
+                id: 12, name: "إسلام", number: 12, position: "خط وسط", passCode: "334455", message: "",
+                matches: [
+                    { id: "m_32", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.5", notes: "مجهود بدني وافر في افتكاك الكرات والالتحامات الهوائية وسط الملعب.", stats: [{ label: "تمريرات قصيرة", value: "17" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "تسديد على المرمى", value: "1" }, { label: "كرات هوائية مكسوبة", value: "4" }, { label: "فقدان الكرة", value: "3" }, { label: "استرجاع الكرة", value: "3" }] }
+                ]
+            },
+            {
+                id: 13, name: "جونيور", number: 13, position: "خط وسط", passCode: "221100", message: "",
+                matches: [
+                    { id: "m_33", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.5", notes: "رقم قياسي مميز جدا في عدد التمريرات والمراوغات خلال 45 دقيقة وتأثير كبير في الخروج بالكرة.", stats: [{ label: "تمريرات قصيرة", value: "49" }, { label: "تمريرات طويلة", value: "9" }, { label: "مراوغات ناجحة", value: "4" }, { label: "تشتيت الكرة", value: "0" }, { label: "كرات هوائية مكسوبة", value: "4" }, { label: "إبعاد الكرات", value: "3" }, { label: "كرات ثابتة", value: "2" }, { label: "رمية تماس", value: "1" }] }
+                ]
+            },
+            {
+                id: 14, name: "حموكشة", number: 22, position: "حارس مرمى", passCode: "990011", message: "",
+                matches: [
+                    { id: "m_34", matchName: "شبان قنا ضد المعنا", minutes: "30", goals: 0, rating: "7.0", notes: "كفاءة عالية جدا في الـ 30 دقيقة بالتعامل مع الكرات الثابتة والتصديات والإمساك بالكرة.", stats: [{ label: "تمريرات قصيرة", value: "10" }, { label: "تمريرات طويلة", value: "3" }, { label: "تشتيت الكرة", value: "1" }, { label: "كرات ممسوكة", value: "3" }, { label: "تصديات", value: "2" }] }
+                ]
+            },
+            {
+                id: 15, name: "محمد الحضري", number: 33, position: "حارس مرمى", passCode: "443322", message: "",
+                matches: [
+                    { id: "m_35", matchName: "شبان قنا ضد المعنا", minutes: "30", goals: 0, rating: "7.0", notes: "حضور ذهني جيد وتصديات ناجحة في فترته القصيرة لحراسة العرين.", stats: [{ label: "تمريرات قصيرة", value: "10" }, { label: "تمريرات طويلة", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "كرات ممسوكة", value: "1" }, { label: "تصديات", value: "2" }] }
+                ]
+            },
+            {
+                id: 16, name: "رضوان علي", number: 14, position: "دفاع / بديل", passCode: "556677", message: "",
+                matches: [
+                    { id: "m_36", matchName: "شبان قنا ضد المدينة المنورة", minutes: "30", goals: 0, rating: "7.0", notes: "تواجد دفاعي سريع بتشتيت الكرة وكسب كرات هوائية.", stats: [{ label: "تشتيت الكرة", value: "3" }, { label: "كرات هوائية مكسوبة", value: "2" }] },
+                    { id: "m_37", matchName: "أسوان ضد شبان قنا", minutes: "30", goals: 0, rating: "6.0", notes: "بديل قدم 5 تمريرات واسترجع كرة وكسب كرة هوائية يتيمة.", stats: [{ label: "تمريرات قصيرة", value: "5" }, { label: "تبديل دخول", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }, { label: "تمريرات طويلة", value: "1" }, { label: "استرجاع الكرة", value: "1" }] },
+                    { id: "m_38", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.0", notes: "أداء هادئ ومؤدي للواجبات الأساسية في قطع الكرات والتسليم والتسلم.", stats: [{ label: "تمريرات قصيرة", value: "11" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "فقدان الكرة", value: "1" }, { label: "رمية تماس", value: "1" }, { label: "خطأ مكتسب", value: "1" }] }
+                ]
+            },
+            {
+                id: 17, name: "مروان نورالدين", number: 18, position: "وسط / بديل", passCode: "889900", message: "",
+                matches: [
+                    { id: "m_39", matchName: "شبان قنا ضد المدينة المنورة", minutes: "30", goals: 0, rating: "7.0", notes: "ساهم في تنشيط الفريق باسترجاع الكرة مرتين ولعب تمريرتين قصيرتين وعرضية واحدة.", stats: [{ label: "استرجاع الكرة", value: "2" }, { label: "تمريرات قصيرة", value: "2" }, { label: "عرضيات", value: "1" }] }
+                ]
+            },
+            {
+                id: 18, name: "مصطفي متولي", number: 11, position: "هجوم / بديل", passCode: "110022", message: "",
+                matches: [
+                    { id: "m_40", matchName: "شبان قنا ضد المدينة المنورة", minutes: "30", goals: 0, rating: "5.5", notes: "كسب كرات هوائية لكنه أضاع فرصة محققة للتسجيل.", stats: [{ label: "كرات هوائية مكسوبة", value: "3" }] },
+                    { id: "m_41", matchName: "أسوان ضد شبان قنا", minutes: "30", goals: 0, rating: "5.0", notes: "مشاركة بديلة غير مؤثرة أضاع فيها فرصة محققة للتسجيل.", stats: [{ label: "تبديل دخول", value: "1" }, { label: "تمريرات قصيرة", value: "1" }, { label: "فرصة محققة ضائعة", value: "1" }, { label: "كرات هوائية مكسوبة", value: "1" }] }
+                ]
+            },
+            {
+                id: 19, name: "بافان أوجستين", number: 17, position: "وسط", passCode: "332211", message: "",
+                matches: [
+                    { id: "m_42", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "6.0", notes: "أداء متوسط نجح في استرجاع الكرة وتشتيتها ولعب تمريرات لكن فقدها وارتكب أخطاء.", stats: [{ label: "استرجاع الكرة", value: "2" }, { label: "تشتيت الكرة", value: "3" }, { label: "تمريرات قصيرة", value: "6" }, { label: "فقدان الكرة", value: "2" }, { label: "أخطاء مرتكبة", value: "2" }] },
+                    { id: "m_43", matchName: "أسوان ضد شبان قنا", minutes: "45", goals: 0, rating: "4.0", notes: "أداء ضعيف حيث ارتكب خطأ بلعب كرة عكسية ومرر تمريرات قليلة وتم استبداله سريعاً.", stats: [{ label: "تمريرات قصيرة", value: "3" }, { label: "تمريرات طويلة", value: "1" }, { label: "إبعاد من المنطقة", value: "1" }, { label: "كرة عكسية", value: "1" }, { label: "تبديل خروج", value: "1" }] },
+                    { id: "m_44", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "4.5", notes: "أداء أقل من المعتاد مع كثرة فقد الكرة ومحدودية الإسهامات الفعالة.", stats: [{ label: "تمريرات قصيرة", value: "18" }, { label: "فقدان الكرة", value: "2" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "خطأ مكتسب", value: "1" }, { label: "كرات ثابتة", value: "1" }] }
+                ]
+            },
+            {
+                id: 20, name: "محمد بوبا", number: 3, position: "هجوم", passCode: "776655", message: "",
+                matches: [
+                    { id: "m_45", matchName: "شبان قنا ضد المدينة المنورة", minutes: "75", goals: 0, rating: "5.5", notes: "واجه صعوبات في الفعالية الهجومية وأضاع فرصة وسدد خارج المرمى وفقد الكرة رغم تفوقه الهوائي.", stats: [{ label: "فقدان الكرة", value: "4" }, { label: "تسديد خارج المرمى", value: "2" }, { label: "كرات هوائية مكسوبة", value: "6" }] },
+                    { id: "m_46", matchName: "أسوان ضد شبان قنا", minutes: "60", goals: 0, rating: "5.5", notes: "واجه صعوبات حيث أضاع فرصة محققة وسدد خارج المرمى وفقد الكرة ولم تكن تمريراته مؤثرة.", stats: [{ label: "تمريرات قصيرة", value: "8" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "فقدان الكرة", value: "2" }, { label: "أخطاء مكتسبة", value: "2" }, { label: "استرجاع الكرة", value: "1" }, { label: "أخطاء مرتكبة", value: "1" }, { label: "فرصة محققة ضائعة", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "تبديل خروج", value: "1" }] }
+                ]
+            },
+            {
+                id: 21, name: "عبدالله دومينك", number: 30, position: "خط وسط", passCode: "442200", message: "",
+                matches: [
+                    { id: "m_47", matchName: "شبان قنا ضد المدينة المنورة", minutes: "90", goals: 0, rating: "7.5", notes: "أداء متزن في خط الوسط واسترداد الكرة للمرة الثانية.", stats: [{ label: "تمريرات قصيرة", value: "10" }, { label: "استرجاع الكرة", value: "4" }] },
+                    { id: "m_48", matchName: "أسوان ضد شبان قنا", minutes: "45", goals: 0, rating: "6.5", notes: "بديل حاول تنشيط خط الوسط بـ 15 تمريرة وكسب كرات هوائية وعانى من فقد الكرة.", stats: [{ label: "تمريرات قصيرة", value: "15" }, { label: "فقدان الكرة", value: "4" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "تبديل دخول", value: "1" }, { label: "خطأ مكتسب", value: "1" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "إبعاد من المنطقة", value: "1" }] },
+                    { id: "m_49", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "7.0", notes: "نشاط ممتاز وقدرة عالية على الاستحواذ وتقديم 29 تمريرة قصيرة في وقت قصير نسبيا.", stats: [{ label: "تمريرات قصيرة", value: "29" }, { label: "تمريرات طويلة", value: "2" }, { label: "تشتيت الكرة", value: "2" }, { label: "كرة عكسية", value: "2" }, { label: "فقدان الكرة", value: "2" }, { label: "رمية تماس", value: "1" }] }
+                ]
+            },
+            {
+                id: 22, name: "مصطفي عز", number: 11, position: "وسط / بديل", passCode: "119988", message: "",
+                matches: [
+                    { id: "m_50", matchName: "أسوان ضد شبان قنا", minutes: "30", goals: 0, rating: "6.0", notes: "شارك كبديل وقدم تمريرات وكسب كرات هوائية وفقد الكرة مرتين.", stats: [{ label: "تمريرات قصيرة", value: "6" }, { label: "كرات هوائية مكسوبة", value: "3" }, { label: "كرات ثابتة", value: "2" }, { label: "فقدان الكرة", value: "2" }, { label: "تبديل دخول", value: "1" }, { label: "رمية تماس", value: "1" }, { label: "تمريرات طويلة", value: "1" }] },
+                    { id: "m_51", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.0", notes: "محاولات جيدة لربط الخطوط واسترجاع الكرات في وسط الملعب.", stats: [{ label: "تمريرات قصيرة", value: "13" }, { label: "تسديد خارج المرمى", value: "1" }, { label: "تشتيت الكرة", value: "2" }, { label: "استرجاع الكرة", value: "2" }, { label: "فقدان الكرة", value: "1" }, { label: "خطأ مكتسب", value: "1" }, { label: "كرات ثابتة", value: "1" }] }
+                ]
+            },
+            {
+                id: 23, name: "سينا", number: 15, position: "وسط", passCode: "228811", message: "",
+                matches: [
+                    { id: "m_52", matchName: "شبان قنا ضد المعنا", minutes: "45", goals: 0, rating: "6.0", notes: "أداء هادئ ومستقر في التمريرات القصيرة والطويلة طوال فترة مشاركته.", stats: [{ label: "تمريرات قصيرة", value: "12" }, { label: "تمريرات طويلة", value: "2" }] }
+                ]
+            }
+        ];
+
+        let playersFullDatabase = [];
+        let teamOverallMatches = [];
+        let historyStack = [];
+
+        async function fetchCloudData() {
+            if (GOOGLE_SCRIPT_URL !== "") {
+                try {
+                    let response = await fetch(GOOGLE_SCRIPT_URL);
+                    let result = await response.json();
+                    
+                    let cloudPlayers = [];
+                    try {
+                        let parsed = result.playersData ? JSON.parse(result.playersData) : [];
+                        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].name) {
+                            cloudPlayers = parsed;
+                        }
+                    } catch(err) {
+                        cloudPlayers = [];
+                    }
+
+                    if (cloudPlayers && cloudPlayers.length > 0) {
+                        initialPlayers.forEach(initP => {
+                            let existingIdx = cloudPlayers.findIndex(cp => String(cp.id) === String(initP.id) || cp.name === initP.name);
+                            if (existingIdx === -1) {
+                                cloudPlayers.push(initP);
+                            }
+                        });
+                        playersFullDatabase = cloudPlayers;
+                    } else {
+                        playersFullDatabase = initialPlayers;
+                    }
+
+                    try {
+                        let teamParsed = result.teamData ? JSON.parse(result.teamData) : [];
+                        teamOverallMatches = (Array.isArray(teamParsed) && teamParsed.length > 0) ? teamParsed : initialTeamMatches;
+                    } catch(err) {
+                        teamOverallMatches = initialTeamMatches;
+                    }
+
+                    localStorage.setItem('hz_players_db', JSON.stringify(playersFullDatabase));
+                    localStorage.setItem('hz_team_matches', JSON.stringify(teamOverallMatches));
+
+                    refreshActiveDataset();
+                    updateTeamAnalyticsUI();
+                    renderTopScorers();
+                    if(!document.getElementById('dashboardSection').classList.contains('hidden')) {
+                        displayPlayers(activeDataset);
+                    }
+                } catch(e) {
+                    const stored = localStorage.getItem('hz_players_db');
+                    playersFullDatabase = stored ? JSON.parse(stored) : initialPlayers;
+                    teamOverallMatches = JSON.parse(localStorage.getItem('hz_team_matches')) || initialTeamMatches;
+                    refreshActiveDataset();
+                    updateTeamAnalyticsUI();
+                    renderTopScorers();
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchCloudData();
+        });
+
+        function saveStateToHistory() {
+            historyStack.push({
+                players: JSON.parse(JSON.stringify(playersFullDatabase)),
+                team: JSON.parse(JSON.stringify(teamOverallMatches))
+            });
+        }
+
+        function undoLastAction() {
+            if (historyStack.length > 0) {
+                const previousState = historyStack.pop();
+                playersFullDatabase = previousState.players;
+                teamOverallMatches = previousState.team;
+                
+                refreshActiveDataset();
+                updateTeamAnalyticsUI();
+                renderTopScorers();
+                displayPlayers(activeDataset);
+            } else {
+                alert("لا يوجد تعديلات سابقة للتراجع عنها.");
+            }
+        }
+
+        function saveAllChangesToDatabase() {
+            localStorage.setItem('hz_players_db', JSON.stringify(playersFullDatabase));
+            localStorage.setItem('hz_team_matches', JSON.stringify(teamOverallMatches));
+            
+            if(GOOGLE_SCRIPT_URL !== "") {
+                document.querySelector('.btn-save').innerText = "⏳ جارٍ الحفظ في جوجل شيت...";
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "saveData",
+                        playersData: JSON.stringify(playersFullDatabase),
+                        teamData: JSON.stringify(teamOverallMatches)
+                    })
+                }).then(() => {
+                    alert("✅ تم حفظ وتحديث كافة بيانات اللاعبين بالتفاصيل الكاملة لملف الـ PDF في Google Sheets بنجاح!");
+                    document.querySelector('.btn-save').innerText = "💾 حفظ وتحديث البيانات";
+                }).catch(e => {
+                    alert("✅ تم الحفظ محلياً في المتصفح بنجاح!");
+                    document.querySelector('.btn-save').innerText = "💾 حفظ وتحديث البيانات";
+                });
+            }
+            historyStack = [];
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const passCode = document.getElementById('passCode').value.trim();
+            const statusMsg = document.getElementById('statusMessage');
+            const welcomeBox = document.getElementById('welcomeMessageContainer');
+            statusMsg.classList.add('hidden');
+            welcomeBox.innerHTML = '';
+
+            if (passCode === "775533002007") {
+                isAdmin = true; isManager = false;
+                activeDataset = [...playersFullDatabase];
+                setupAdminUI(true);
+                renderDashboard("لوحة تحكم الكابتن HAMZA ABOZID الشاملة");
+            } 
+            else if (passCode === "99113355") {
+                isAdmin = false; isManager = true;
+                activeDataset = [...playersFullDatabase];
+                setupAdminUI(false, true);
+                renderDashboard("لوحة متابعة المدير الفني (إشراف ومتابعة)");
+            } 
+            else {
+                isAdmin = false; isManager = false;
+                const targetPlayer = playersFullDatabase.find(p => String(p.passCode) === String(passCode));
+                if (targetPlayer) {
+                    loggedInPlayer = targetPlayer;
+                    activeDataset = [targetPlayer];
+                    setupAdminUI(false, false);
+                    welcomeBox.innerHTML = `<div class="welcome-banner">مرحباً بك يا كابتن ${targetPlayer.name}، نتمنى لك التوفيق!</div>`;
+                    renderDashboard(`السجل الإحصائي الشخصي: ${targetPlayer.name}`);
+                    
+                    if (targetPlayer.message && targetPlayer.message !== "") {
+                        document.getElementById('modalMsgText').innerText = targetPlayer.message;
+                        document.getElementById('playerMessageModal').classList.remove('hidden');
+                    }
+                } else {
+                    statusMsg.innerText = "كلمة المرور غير صحيحة، يرجى إعادة المحاولة.";
+                    statusMsg.classList.remove('hidden');
+                }
+            }
+        }
+
+        function setupAdminUI(adminStatus, managerStatus = false) {
+            if (adminStatus) {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('addNewPlayerSection').classList.remove('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.remove('hidden');
+                document.getElementById('adminFloatingBar').classList.remove('hidden');
+                document.getElementById('searchContainer').classList.remove('hidden');
+                populateAdminSelect();
+            } else if (managerStatus) {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('addNewPlayerSection').classList.add('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminFloatingBar').classList.add('hidden');
+                document.getElementById('searchContainer').classList.remove('hidden');
+                populateAdminSelect();
+            } else {
+                document.getElementById('adminPanel').classList.add('hidden');
+                document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
+                document.getElementById('adminFloatingBar').classList.add('hidden');
+                document.getElementById('searchContainer').classList.add('hidden');
+            }
+        }
+
+        function addNewPlayer() {
+            saveStateToHistory();
+            const name = document.getElementById('newPlayerName').value.trim();
+            const number = parseInt(document.getElementById('newPlayerNumber').value);
+            const position = document.getElementById('newPlayerPosition').value.trim();
+            const passCode = document.getElementById('newPlayerPasscode').value.trim();
+
+            if (!name) return;
+
+            const newPlayer = { id: Date.now(), name, number: number||0, position: position||"", passCode, message: "", matches: [] };
+            playersFullDatabase.push(newPlayer);
+            populateAdminSelect();
+            refreshActiveDataset();
+            renderTopScorers();
+            displayPlayers(activeDataset);
+
+            document.getElementById('newPlayerName').value = '';
+            document.getElementById('newPlayerNumber').value = '';
+            document.getElementById('newPlayerPosition').value = '';
+            document.getElementById('newPlayerPasscode').value = '';
+        }
+
+        function openEditPlayerProfileModal(playerId) {
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (!player) return;
+            document.getElementById('edit_prof_id').value = player.id;
+            document.getElementById('edit_prof_name').value = player.name || '';
+            document.getElementById('edit_prof_number').value = player.number || '';
+            document.getElementById('edit_prof_position').value = player.position || '';
+            document.getElementById('edit_prof_passcode').value = player.passCode || '';
+            document.getElementById('playerEditProfileModal').classList.remove('hidden');
+        }
+
+        function closePlayerEditProfileModal() { document.getElementById('playerEditProfileModal').classList.add('hidden'); }
+
+        function savePlayerProfileEdit() {
+            saveStateToHistory();
+            const id = document.getElementById('edit_prof_id').value;
+            const player = playersFullDatabase.find(p => String(p.id) === String(id));
+            if (!player) return;
+
+            player.name = document.getElementById('edit_prof_name').value.trim();
+            player.number = parseInt(document.getElementById('edit_prof_number').value) || 0;
+            player.position = document.getElementById('edit_prof_position').value.trim();
+            player.passCode = document.getElementById('edit_prof_passcode').value.trim();
+
+            closePlayerEditProfileModal();
+            populateAdminSelect();
+            refreshActiveDataset();
+            renderTopScorers();
+            displayPlayers(activeDataset);
+            alert("✅ تم تعديل بيانات اللاعب بنجاح!");
+        }
+
+        function renderTopScorers() {
+            const container = document.getElementById('topScorersContainer');
+            let scorers = playersFullDatabase.map(p => {
+                let totalGoals = (p.matches || []).reduce((sum, m) => sum + (parseInt(m.goals) || 0), 0);
+                return { name: p.name, number: p.number, goals: totalGoals };
+            }).filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals).slice(0, 5);
+
+            if (scorers.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-light); font-weight:bold;">لا يوجد أهداف مسجلة حتى الآن.</p>';
+                return;
+            }
+
+            container.innerHTML = scorers.map((s, idx) => `
+                <div class="scorer-item">
+                    <div class="scorer-name"><span style="color:var(--text-light); margin-left:8px;">${idx+1}.</span> ${s.name} <span style="font-size:0.8rem; color:var(--text-light);">#${s.number}</span></div>
+                    <div class="scorer-goals">${s.goals} ⚽</div>
+                </div>
+            `).join('');
+        }
+
+        function updateTeamAnalyticsUI() {
+            let wins = 0, draws = 0, losses = 0, totalPasses = 0, totalGoals = 0;
+            const matchesList = document.getElementById('teamMatchesList');
+            matchesList.innerHTML = '';
+
+            teamOverallMatches.forEach(m => {
+                if (m.result === "فوز") wins++;
+                else if (m.result === "تعادل") draws++;
+                else if (m.result === "هزيمة") losses++;
+                totalPasses += parseInt(m.passes) || 0;
+                totalGoals += parseInt(m.goalsFor) || 0;
+
+                matchesList.innerHTML += `
+                    <div style="background:#ffffff; border:1px solid var(--border); border-radius:0.5rem; padding:0.75rem; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${m.matchName || 'مباراة بدون اسم'}</strong> 
+                            <span style="font-size:0.85rem; color:var(--text-light); margin-right:10px;">(النتيجة: ${m.goalsFor||0} - ${m.goalsAgainst||0}) [${m.result}]</span>
+                        </div>
+                        ${isAdmin ? `<div style="display:flex; gap:0.5rem;">
+                            <button onclick="openTeamMatchModal('${m.id}')" class="btn-edit-match">تعديل</button>
+                            <button onclick="deleteTeamMatch('${m.id}')" class="btn-delete-match">حذف</button>
+                        </div>` : ''}
+                    </div>
+                `;
+            });
+
+            document.getElementById('teamTotalMatches').innerText = teamOverallMatches.length;
+            document.getElementById('teamWins').innerText = wins;
+            document.getElementById('teamDraws').innerText = draws;
+            document.getElementById('teamLosses').innerText = losses;
+            document.getElementById('teamTotalPasses').innerText = totalPasses;
+            document.getElementById('teamTotalGoals').innerText = totalGoals;
+        }
+
+        function openTeamMatchModal(matchId = null) {
+            document.getElementById('teamMatchModal').classList.remove('hidden');
+            if (matchId) {
+                const m = teamOverallMatches.find(x => x.id === matchId);
+                document.getElementById('teamModalTitle').innerText = 'تعديل مباراة الفريق';
+                document.getElementById('tm_id').value = m.id;
+                document.getElementById('tm_matchName').value = m.matchName || '';
+                document.getElementById('tm_result').value = m.result || '';
+                document.getElementById('tm_passes').value = m.passes || '';
+                document.getElementById('tm_goalsFor').value = m.goalsFor || '';
+                document.getElementById('tm_goalsAgainst').value = m.goalsAgainst || '';
+            } else {
+                document.getElementById('teamModalTitle').innerText = 'إضافة مباراة جديدة للفريق';
+                document.getElementById('tm_id').value = '';
+                document.getElementById('tm_matchName').value = '';
+                document.getElementById('tm_result').value = '';
+                document.getElementById('tm_passes').value = '';
+                document.getElementById('tm_goalsFor').value = '';
+                document.getElementById('tm_goalsAgainst').value = '';
+            }
+        }
+        function closeTeamMatchModal() { document.getElementById('teamMatchModal').classList.add('hidden'); }
+        
+        function saveTeamMatch() {
+            saveStateToHistory();
+            const id = document.getElementById('tm_id').value;
+            const data = {
+                id: id || ('tm_' + Date.now()),
+                matchName: document.getElementById('tm_matchName').value,
+                result: document.getElementById('tm_result').value,
+                passes: document.getElementById('tm_passes').value,
+                goalsFor: document.getElementById('tm_goalsFor').value,
+                goalsAgainst: document.getElementById('tm_goalsAgainst').value
+            };
+            if (id) {
+                const idx = teamOverallMatches.findIndex(x => x.id === id);
+                if (idx > -1) teamOverallMatches[idx] = data;
+            } else {
+                teamOverallMatches.push(data);
+            }
+            closeTeamMatchModal();
+            updateTeamAnalyticsUI();
+        }
+        
+        function deleteTeamMatch(id) {
+            if(confirm("هل متأكد من مسح هذه المباراة العامة؟")) {
+                saveStateToHistory();
+                teamOverallMatches = teamOverallMatches.filter(m => m.id !== id);
+                updateTeamAnalyticsUI();
+            }
+        }
+
+        function openAddMatchModal(playerId) {
+            document.getElementById('matchModalTitle').innerText = '➕ إضافة مباراة جديدة للاعب';
+            document.getElementById('editor_playerId').value = playerId;
+            document.getElementById('editor_matchId').value = '';
+            document.getElementById('editor_matchName').value = '';
+            document.getElementById('editor_minutes').value = '';
+            document.getElementById('editor_goals').value = '';
+            document.getElementById('editor_rating').value = '';
+            document.getElementById('editor_notes').value = '';
+            renderDynamicStatsInput([{ label: "", value: "" }]);
+            document.getElementById('playerMatchEditorModal').classList.remove('hidden');
+        }
+
+        function openEditMatchModal(playerId, matchId) {
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            const match = player.matches.find(m => String(m.id) === String(matchId));
+            
+            document.getElementById('matchModalTitle').innerText = `✏️ تعديل مباراة للاعب`;
+            document.getElementById('editor_playerId').value = playerId;
+            document.getElementById('editor_matchId').value = matchId;
+            document.getElementById('editor_matchName').value = match.matchName || '';
+            document.getElementById('editor_minutes').value = match.minutes || '';
+            document.getElementById('editor_goals').value = match.goals || '';
+            document.getElementById('editor_rating').value = match.rating || '';
+            document.getElementById('editor_notes').value = match.notes || '';
+
+            renderDynamicStatsInput(match.stats && match.stats.length > 0 ? match.stats : [{ label: "", value: "" }]);
+            document.getElementById('playerMatchEditorModal').classList.remove('hidden');
+        }
+
+        function closePlayerMatchModal() { document.getElementById('playerMatchEditorModal').classList.add('hidden'); }
+
+        function renderDynamicStatsInput(statsArray) {
+            const container = document.getElementById('dynamicStatsContainer');
+            container.innerHTML = '';
+            statsArray.forEach((stat, idx) => {
+                container.innerHTML += `
+                    <div class="dynamic-stat-row" id="statRow_${idx}">
+                        <input type="text" class="form-control stat-label-input" value="${stat.label || ''}" placeholder="اسم الإجراء...">
+                        <input type="text" class="form-control stat-val-input" value="${stat.value || ''}" placeholder="الرقم">
+                        <button type="button" onclick="this.parentElement.remove()" class="btn-delete-match" style="width:auto; margin-top:0; padding:0.5rem 0.8rem;">🗑️</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addDynamicStatRow() {
+            const container = document.getElementById('dynamicStatsContainer');
+            const div = document.createElement('div');
+            div.className = 'dynamic-stat-row';
+            div.innerHTML = `
+                <input type="text" class="form-control stat-label-input" placeholder="اسم الإجراء">
+                <input type="text" class="form-control stat-val-input" placeholder="الرقم">
+                <button type="button" onclick="this.parentElement.remove()" class="btn-delete-match" style="width:auto; margin-top:0; padding:0.5rem 0.8rem;">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function savePlayerMatchFromModal() {
+            saveStateToHistory();
+            const playerId = document.getElementById('editor_playerId').value;
+            const matchId = document.getElementById('editor_matchId').value;
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (!player) return;
+
+            const collectedStats = [];
+            document.querySelectorAll('#dynamicStatsContainer .dynamic-stat-row').forEach(row => {
+                const label = row.querySelector('.stat-label-input').value.trim();
+                const val = row.querySelector('.stat-val-input').value.trim();
+                if (label || val) {
+                    collectedStats.push({ label, value: val });
+                }
+            });
+
+            const matchData = {
+                id: matchId || ('m_' + Date.now()),
+                matchName: document.getElementById('editor_matchName').value,
+                minutes: document.getElementById('editor_minutes').value,
+                goals: document.getElementById('editor_goals').value,
+                rating: document.getElementById('editor_rating').value,
+                notes: document.getElementById('editor_notes').value,
+                stats: collectedStats
+            };
+
+            if (!player.matches) player.matches = [];
+
+            if (matchId) {
+                const idx = player.matches.findIndex(m => String(m.id) === String(matchId));
+                if (idx > -1) player.matches[idx] = matchData;
+            } else {
+                player.matches.push(matchData);
+            }
+
+            closePlayerMatchModal();
+            refreshActiveDataset();
+            renderTopScorers();
+            displayPlayers(activeDataset);
+        }
+
+        function deletePlayerMatch(playerId, matchId) {
+            if (confirm("هل أنت متأكد من حذف هذه المباراة من سجل هذا اللاعب؟")) {
+                saveStateToHistory();
+                const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+                if (player) {
+                    player.matches = (player.matches || []).filter(m => String(m.id) !== String(matchId));
+                    refreshActiveDataset();
+                    renderTopScorers();
+                    displayPlayers(activeDataset);
+                }
+            }
+        }
+
+        function deletePlayer(playerId) {
+            if (confirm(`هل أنت متأكد من حذف اللاعب وكافة بياناته ومبارياته نهائياً؟`)) {
+                saveStateToHistory();
+                playersFullDatabase = playersFullDatabase.filter(p => String(p.id) !== String(playerId));
+                populateAdminSelect();
+                refreshActiveDataset();
+                renderTopScorers();
+                displayPlayers(activeDataset);
+            }
+        }
+
+        function filterPlayers() { 
+            const query = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : "";
+            if (query === "") {
+                activeDataset = [...playersFullDatabase];
+            } else {
+                activeDataset = playersFullDatabase.filter(p => 
+                    (p.name && p.name.toLowerCase().includes(query)) || 
+                    (p.number && String(p.number) === query) ||
+                    (p.position && p.position.toLowerCase().includes(query))
+                );
+            }
+            displayPlayers(activeDataset); 
+        }
+
+        function refreshActiveDataset() {
+            if (isAdmin || isManager) {
+                filterPlayers();
+            } else if (loggedInPlayer) {
+                activeDataset = [loggedInPlayer];
+            }
+        }
+
+        function populateAdminSelect() {
+            const select = document.getElementById('msgPlayerSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            playersFullDatabase.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name} (#${p.number})</option>`;
+            });
+        }
+
+        function sendPlayerMessage() {
+            saveStateToHistory();
+            const playerId = document.getElementById('msgPlayerSelect').value;
+            const msg = document.getElementById('customPlayerMsg').value.trim();
+            const player = playersFullDatabase.find(p => String(p.id) === String(playerId));
+            if (player) {
+                player.message = msg;
+                alert(`✅ تم إرسال الرسالة للاعب: ${player.name}`);
+                document.getElementById('customPlayerMsg').value = '';
+            }
+        }
+
+        function acknowledgeMessage() {
+            if (loggedInPlayer) {
+                saveStateToHistory();
+                loggedInPlayer.message = "";
+            }
+            document.getElementById('playerMessageModal').classList.add('hidden');
+        }
+
+        function renderDashboard(titleText) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('dashHeaderTitle').innerText = titleText;
+            updateTeamAnalyticsUI();
+            renderTopScorers();
+            displayPlayers(activeDataset);
+        }
+
+        function displayPlayers(playersArray) {
+            const container = document.getElementById('contentContainer');
+            container.innerHTML = '';
+            const canEdit = isAdmin;
+
+            playersArray.forEach(player => {
+                let chartCanvasId = `chart_player_${player.id}`;
+                let cardHTML = `
+                    <div class="player-profile-container">
+                        <div class="player-title-bar">
+                            <div>
+                                <h3 style="color:var(--primary); font-size:1.25rem;">
+                                    ${player.name} <span style="font-size:0.9rem; color:var(--secondary);">#${player.number} (${player.position})</span>
+                                    ${isAdmin ? `<span style="font-size:0.8rem; color:var(--accent); font-weight:bold; margin-right:10px;">[كود: ${player.passCode}]</span>` : ''}
+                                </h3>
+                            </div>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                ${canEdit ? `<button onclick="openEditPlayerProfileModal('${player.id}')" class="btn-edit-match" style="background:var(--accent); color:#000;">⚙️ تعديل بيانات اللاعب</button>` : ''}
+                                ${(canEdit || isManager) ? `<button onclick="openAddMatchModal('${player.id}')" class="btn-add-match" style="margin:0;">➕ إضافة مباراة للاعب</button>` : ''}
+                                ${canEdit ? `<button onclick="deletePlayer('${player.id}')" class="btn-delete-match" style="padding:0.6rem 1rem; font-size:0.85rem; width:auto; margin:0;">🗑️ حذف اللاعب</button>` : ''}
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                            <h4 style="font-size: 0.9rem; color: var(--secondary); margin-bottom: 0.5rem; text-align: right;">📈 رسم بياني لتقييمات اللاعب عبر المباريات:</h4>
+                            <div style="position: relative; height: 180px; width: 100%;">
+                                <canvas id="${chartCanvasId}"></canvas>
+                            </div>
+                        </div>
+
+                        <h4 style="color:var(--secondary); margin-bottom:1rem; font-size:1rem;">السجل الشخصي للمباريات:</h4>
+                        <div class="matches-grid">
+                `;
+
+                (player.matches || []).forEach((m) => {
+                    let statsBoxesHTML = `
+                        ${m.minutes ? `<div class="stat-box"><div class="stat-label">الدقائق</div><div class="stat-val">${m.minutes}</div></div>` : ''}
+                        ${m.goals ? `<div class="stat-box"><div class="stat-label">الأهداف</div><div class="stat-val" style="color:var(--success);">${m.goals}</div></div>` : ''}
+                        ${m.rating ? `<div class="stat-box"><div class="stat-label">التقييم</div><div class="stat-val" style="color:var(--accent);">${m.rating}</div></div>` : ''}
+                    `;
+                    
+                    if (m.stats && Array.isArray(m.stats)) {
+                        m.stats.forEach(st => {
+                            if (st.label || st.value) {
+                                statsBoxesHTML += `<div class="stat-box"><div class="stat-label">${st.label}</div><div class="stat-val">${st.value}</div></div>`;
+                            }
+                        });
+                    }
+
+                    cardHTML += `
+                        <div class="match-card">
+                            <div>
+                                <div style="font-weight:800; color:var(--primary); margin-bottom:0.75rem; font-size:0.95rem;">${m.matchName || 'مباراة'}</div>
+                                <div class="match-stats-grid">${statsBoxesHTML}</div>
+                                ${m.notes ? `<p style="font-size:0.8rem; color:var(--text-light); margin-top:0.5rem; line-height:1.4;"><strong>تحليل:</strong> ${m.notes}</p>` : ''}
+                            </div>
+                            ${canEdit ? `
+                                <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                                    <button onclick="openEditMatchModal('${player.id}', '${m.id}')" class="btn-edit-match">✏️ تعديل</button>
+                                    <button onclick="deletePlayerMatch('${player.id}', '${m.id}')" class="btn-delete-match">🗑️ حذف</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                cardHTML += `</div></div>`;
+                container.innerHTML += cardHTML;
+            });
+
+            playersArray.forEach(player => {
+                let chartCanvasId = `chart_player_${player.id}`;
+                let canvasEl = document.getElementById(chartCanvasId);
+                if (canvasEl) {
+                    if(chartsMap[chartCanvasId]) {
+                        chartsMap[chartCanvasId].destroy();
+                    }
+
+                    let matches = player.matches || [];
+                    let matchLabels = matches.map((m, idx) => m.matchName || `مباراة ${idx+1}`);
+                    let matchRatings = matches.map(m => parseFloat(m.rating) || 0);
+
+                    chartsMap[chartCanvasId] = new Chart(canvasEl.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: matchLabels,
+                            datasets: [{
+                                label: 'التقييم من 10',
+                                data: matchRatings,
+                                borderColor: '#1e3a8a',
+                                backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { min: 0, max: 10, ticks: { stepSize: 2 } }
+                            },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            });
+        }
+
+        function logout() { location.reload(); }
+    </script>
+
+</body>
+</html>
