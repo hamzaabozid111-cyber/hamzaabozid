@@ -7,6 +7,17 @@
     <!-- كود إثبات ملكية موقع جوجل -->
     <meta name="google-site-verification" content="google8f1480e6e27f1b24" />
 
+    <!-- OneSignal: إشعارات المتصفح -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "7a646822-989e-4135-a270-783cba9868d5",
+        });
+      });
+    </script>
+
     <title>حمزة أبوزيد | محلل الأداء | محلل أداء شبان قنا</title>
     <meta name="description" content="الموقع الرسمي لـ حمزة أبوزيد (HAMZA ABOZID) محلل الأداء، محلل أداء فريق شبان قنا. منصة تحليل أداء تفاعلية لإحصائيات اللاعبين والمباريات.">
     <meta name="keywords" content="حمزة ابوزيد, حمزة أبوزيد, حمزة ابوزيد محلل الاداء, حمزة ابوزيد محلل اداء شبان قنا, محلل أداء, شبان قنا, تحليل الأداء, HAMZA ABOZID">
@@ -170,7 +181,10 @@
                     <h2 id="dashHeaderTitle" style="font-size:1.2rem;">لوحة تحكم الكابتن HAMZA ABOZID الشاملة</h2>
                 </div>
             </div>
-            <button onclick="logout()" class="btn" style="width: auto; background: var(--danger); padding: 0.5rem 1.25rem;">تسجيل الخروج</button>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <button id="adminLogsBtn" onclick="openLoginLogs()" class="btn hidden" style="width:auto; background: var(--secondary); padding: 0.5rem 1.25rem;">📋 سجل دخول اللاعبين</button>
+                <button onclick="logout()" class="btn" style="width: auto; background: var(--danger); padding: 0.5rem 1.25rem;">تسجيل الخروج</button>
+            </div>
         </div>
 
         <div id="welcomeMessageContainer"></div>
@@ -212,6 +226,9 @@
                 <select id="msgPlayerSelect" class="form-control" style="letter-spacing: normal;"></select>
                 <input type="text" id="customPlayerMsg" class="form-control" style="letter-spacing: normal; text-align:right;" placeholder="اكتب التعليمات أو الرسالة هنا...">
                 <button onclick="sendPlayerMessage()" class="btn" style="background: var(--accent);">إرسال الرسالة الآن</button>
+            </div>
+            <div style="margin-top:1rem;">
+                <button id="sendPushBtn" onclick="sendPushToAllPlayers()" class="btn" style="background: var(--secondary);">🔔 إشعار لكل اللاعبين: المحلل حمزة أبوزيد حدّث الإحصائيات</button>
             </div>
 
             <!-- قسم إضافة لاعب جديد للنظام -->
@@ -323,6 +340,18 @@
         </div>
     </div>
 
+    <!-- نافذة سجل دخول اللاعبين -->
+    <div id="loginLogsModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 style="color:var(--primary); margin-bottom:1rem; border-bottom:2px solid var(--accent); padding-bottom:0.5rem;">📋 سجل دخول اللاعبين</h3>
+            <div id="loginLogsBody" style="font-size:0.9rem;"></div>
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+                <button onclick="openLoginLogs()" class="btn" style="background:var(--secondary); width:auto; padding:0.6rem 2rem;">🔄 تحديث</button>
+                <button onclick="closeLoginLogs()" class="btn" style="background:var(--danger); width:auto; padding:0.6rem 2rem;">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
     <!-- نافذة قراءة الرسائل -->
     <div id="playerMessageModal" class="modal-overlay hidden">
         <div class="modal-card" style="text-align:center;">
@@ -335,6 +364,9 @@
     <script>
         let chartsMap = {};
         
+        // رابط سكريبت جوجل الجديد الخاص بسجل الدخول والإشعارات (بعد النشر، الصقه هنا بين علامتي التنصيص)
+        const EXTRA_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNz0I6AhOXoN2hSiWReIzZ5tpRnTqJ4DNVYkcyC3i5zhofQJq6NK65-4GlZhzg3jy04g/exec";
+
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNgoAiofKBsUFuHP0OEFUr20B1nrCzN9mnUXkAvvTiaiGnIbHChZ7ap3WEB6JtDY80/exec"; 
 
         const initialTeamMatches = [
@@ -651,6 +683,8 @@
                     loggedInPlayer = targetPlayer;
                     activeDataset = [targetPlayer];
                     setupAdminUI(false, false);
+                    logPlayerLogin(targetPlayer);
+                    setupPushForPlayer(targetPlayer);
                     welcomeBox.innerHTML = `<div class="welcome-banner">مرحباً بك يا كابتن ${targetPlayer.name}، نتمنى لك التوفيق!</div>`;
                     renderDashboard(`السجل الإحصائي الشخصي: ${targetPlayer.name}`);
                     
@@ -672,8 +706,10 @@
                 document.getElementById('adminAddTeamMatchBtn').classList.remove('hidden');
                 document.getElementById('adminFloatingBar').classList.remove('hidden');
                 document.getElementById('searchContainer').classList.remove('hidden');
+                document.getElementById('adminLogsBtn').classList.remove('hidden');
                 populateAdminSelect();
             } else if (managerStatus) {
+                document.getElementById('adminLogsBtn').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 document.getElementById('addNewPlayerSection').classList.add('hidden');
                 document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
@@ -681,6 +717,7 @@
                 document.getElementById('searchContainer').classList.remove('hidden');
                 populateAdminSelect();
             } else {
+                document.getElementById('adminLogsBtn').classList.add('hidden');
                 document.getElementById('adminPanel').classList.add('hidden');
                 document.getElementById('adminAddTeamMatchBtn').classList.add('hidden');
                 document.getElementById('adminFloatingBar').classList.add('hidden');
@@ -1168,6 +1205,114 @@
                     });
                 }
             });
+        }
+
+        // تسجيل دخول اللاعب في الشيت (الوقت بيتسجل من سيرفر جوجل)
+        function logPlayerLogin(player) {
+            if (EXTRA_SCRIPT_URL === "") return;
+            try {
+                fetch(EXTRA_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "logLogin",
+                        playerId: player.id,
+                        playerName: player.name,
+                        playerNumber: player.number,
+                        clientTime: new Date().toISOString()
+                    })
+                }).catch(() => {});
+            } catch (e) {}
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        async function openLoginLogs() {
+            const modal = document.getElementById('loginLogsModal');
+            const body = document.getElementById('loginLogsBody');
+            modal.classList.remove('hidden');
+            body.innerHTML = '<p style="text-align:center; color:var(--text-light); font-weight:bold;">⏳ جارٍ تحميل السجل...</p>';
+            if (EXTRA_SCRIPT_URL === "") {
+                body.innerHTML = '<p style="text-align:center; color:var(--danger); font-weight:bold;">سكريبت السجل والإشعارات لسه ما اتربطش بالصفحة.</p>';
+                return;
+            }
+            try {
+                const res = await fetch(EXTRA_SCRIPT_URL + '?action=getLogs&t=' + Date.now());
+                const data = await res.json();
+                const logs = Array.isArray(data.logs) ? data.logs : null;
+                if (!logs) {
+                    body.innerHTML = '<p style="text-align:center; color:var(--danger); font-weight:bold;">حصلت مشكلة في قراءة السجل، تأكد إن السكريبت منشور للجميع (Anyone).</p>';
+                    return;
+                }
+                if (logs.length === 0) {
+                    body.innerHTML = '<p style="text-align:center; color:var(--text-light); font-weight:bold;">لا توجد عمليات دخول مسجلة حتى الآن.</p>';
+                    return;
+                }
+                const tz = 'Africa/Cairo';
+                const rows = logs.map((l, i) => {
+                    const d = new Date(l.time);
+                    const day = d.toLocaleDateString('ar-EG', { weekday: 'long', timeZone: tz });
+                    const date = d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', timeZone: tz });
+                    const time = d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', timeZone: tz });
+                    return `<tr style="border-bottom:1px solid var(--border);">
+                        <td style="padding:0.5rem;">${i + 1}</td>
+                        <td style="padding:0.5rem; font-weight:800; color:var(--secondary);">${escapeHtml(l.name)} <span style="color:var(--text-light); font-size:0.8rem;">#${escapeHtml(l.number)}</span></td>
+                        <td style="padding:0.5rem;">${day}</td>
+                        <td style="padding:0.5rem;">${date}</td>
+                        <td style="padding:0.5rem; font-weight:700;">${time}</td>
+                    </tr>`;
+                }).join('');
+                body.innerHTML = `<table style="width:100%; border-collapse:collapse; text-align:right;">
+                    <thead><tr style="background:#f1f5f9;"><th style="padding:0.5rem;">#</th><th style="padding:0.5rem;">اللاعب</th><th style="padding:0.5rem;">اليوم</th><th style="padding:0.5rem;">التاريخ</th><th style="padding:0.5rem;">الوقت</th></tr></thead>
+                    <tbody>${rows}</tbody></table>`;
+            } catch (e) {
+                body.innerHTML = '<p style="text-align:center; color:var(--danger); font-weight:bold;">تعذر تحميل السجل. تأكد من الاتصال ومن تحديث سكريبت جوجل.</p>';
+            }
+        }
+
+        function closeLoginLogs() { document.getElementById('loginLogsModal').classList.add('hidden'); }
+
+        // ربط اللاعب بالإشعارات (OneSignal) وطلب الإذن منه
+        function setupPushForPlayer(player) {
+            try {
+                window.OneSignalDeferred = window.OneSignalDeferred || [];
+                OneSignalDeferred.push(async function(OneSignal) {
+                    try {
+                        await OneSignal.login(String(player.id));
+                        if (!OneSignal.Notifications.permission) {
+                            await OneSignal.Slidedown.promptPush();
+                        }
+                    } catch (e) { console.error("OneSignal:", e); }
+                });
+            } catch (e) {}
+        }
+
+        // إرسال إشعار لكل اللاعبين (عن طريق سكريبت جوجل، المفتاح السري مش في الصفحة)
+        function sendPushToAllPlayers() {
+            if (EXTRA_SCRIPT_URL === "") { alert("سكريبت الإشعارات لسه ما اتربطش بالصفحة."); return; }
+            if (!confirm("إرسال إشعار لكل اللاعبين: المحلل حمزة أبوزيد حدّث الإحصائيات؟")) return;
+            const secret = "775533002007";
+            const btn = document.getElementById('sendPushBtn');
+            btn.disabled = true;
+            fetch(EXTRA_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "sendPush",
+                    secret: secret,
+                    title: "حمزة أبوزيد - محلل الأداء",
+                    message: "محلل الأداء حمزة أبوزيد حدّث الإحصائيات، ادخل شوف أداءك الآن 📊",
+                    url: location.href.split('#')[0]
+                })
+            }).then(() => {
+                alert("🔔 تم إرسال الطلب. الإشعار هيوصل للاعبين اللي سمحوا بالإشعارات خلال ثواني.");
+            }).catch(() => {
+                alert("تعذر إرسال الطلب، تأكد من الاتصال.");
+            }).finally(() => { btn.disabled = false; });
         }
 
         function logout() { location.reload(); }
